@@ -1,0 +1,32 @@
+.card {
+  border: 1px solid black;
+  border-radius: 5px;
+  width: 50px;
+  height: 60px;
+  background-color: white;
+  font-family: sans-serif;
+  font-size: 8px;
+  box-sizing: border-box;
+  padding-top: 5px;
+  text-align: center;
+
+  &.highlight {
+    border-color: red;
+    border-width: 2px;
+  }
+
+  &.isClickable {
+    cursor: pointer;
+  }
+
+  &.isTapped {
+    transform: rotate(90deg);
+  }
+
+  & .nameplate {
+    background-color: black;
+    color: white;
+    padding: 2px 0;
+    box-sizing: border-box;
+  }
+}

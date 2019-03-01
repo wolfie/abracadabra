@@ -1,0 +1,10 @@
+.cardstackcomponent {
+  position: relative;
+  height: calc(60px + (var(--cards) - 1) * 15px);
+
+  & > * {
+    position: absolute;
+    top: calc(var(--index) * 15px);
+    z-index: var(--index);
+  }
+}
