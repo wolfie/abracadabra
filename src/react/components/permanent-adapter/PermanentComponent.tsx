@@ -1,6 +1,6 @@
-import * as React from 'react';
-import * as styles from './PermanentComponent.scss';
-import * as classnames from 'classnames/bind';
+import * as React from "react";
+import * as styles from "./PermanentComponent.scss";
+import * as classnames from "classnames/bind";
 const css = classnames.bind(styles);
 
 export interface CardProps {
@@ -12,23 +12,16 @@ export interface CardProps {
 }
 
 const CardComponent: React.FunctionComponent<CardProps> = props => {
-  const {
-    isTapped = false,
-    name = '',
-    isClickable = false,
-    onClick,
-    highlight = false
-  } = props;
+  const { isTapped = false, name = "", isClickable = false, onClick } = props;
   return (
     <div
       onClick={onClick}
-      className={css('card', {
-        highlight,
+      className={css("card", {
         isClickable,
         isTapped
       })}
     >
-      <div className={css('nameplate')}>{name || <>&nbsp;</>}</div>
+      <div className={css("nameplate")}>{name || <>&nbsp;</>}</div>
     </div>
   );
 };

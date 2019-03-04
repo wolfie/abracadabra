@@ -1,28 +1,24 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import * as React from "react";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
 import {
   GameStateActions,
   Permanent,
   GameState,
-  Cost
-} from '../redux/game-state/types';
-import { enterPermanentToBattlefield } from '../redux/game-state/actions';
-import PermanentAdapter from './components/card-component';
+  Ability
+} from "../redux/game-state/types";
+import { enterPermanentToBattlefield } from "../redux/game-state/actions";
+import PermanentAdapter from "./components/permanent-adapter/PermanentAdapter";
+import ManaPoolAdapter from "./components/manapool-adapter/ManaPoolAdapter";
 
-interface Props {
-  initBoard: () => any;
-  board: Permanent[];
-  costsOwed: Cost;
-}
+type DispatchProps = { initBoard: () => unknown };
+type StateProps = { board: Permanent[] };
+type OwnProps = {};
+type Props = DispatchProps & StateProps & OwnProps;
 
-const Game: React.FunctionComponent<Props> = ({
-  initBoard,
-  board,
-  costsOwed
-}) => (
+const Game: React.FunctionComponent<Props> = ({ initBoard, board }) => (
   <>
-    {!Cost.isEmpty(costsOwed) && <div>Pay up!</div>}
+    <ManaPoolAdapter />
     {board.length > 0 ? (
       <>
         {board.map(permanent => (
@@ -36,19 +32,20 @@ const Game: React.FunctionComponent<Props> = ({
 );
 
 const swamp: Permanent = {
-  abilities: [{ cost: { ...Cost.Empty, taps: [-1] } }],
+  abilities: [Ability.TapForBlackMana],
   id: -1,
   isTapped: false,
-  name: 'Swamp'
+  name: "Swamp"
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<GameStateActions>) => ({
+const mapDispatchToProps: (...x: any) => DispatchProps = (
+  dispatch: Dispatch<GameStateActions>
+) => ({
   initBoard: () => dispatch(enterPermanentToBattlefield(swamp))
 });
 
-const mapStateToProps = (state: GameState) => ({
-  board: state.board,
-  costsOwed: state.costsOwed
+const mapStateToProps: (...x: any) => StateProps = (state: GameState) => ({
+  board: state.board
 });
 
 export default connect(

@@ -1,9 +1,9 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import Game from './Game';
-import { createStore } from 'redux';
-import { gameStateReducer } from '../redux/game-state/reducers';
-import { Provider } from 'react-redux';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import Game from "./Game";
+import { createStore } from "redux";
+import { gameStateReducer } from "../redux/game-state/reducers";
+import { Provider } from "react-redux";
 
 const anyWindow = window as any;
 const store = createStore(
@@ -12,9 +12,18 @@ const store = createStore(
     anyWindow.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
+class Catcher extends React.Component {
+  componentDidCatch(e: Error) {
+    window.alert(e.message);
+  }
+  render() {
+    return this.props.children;
+  }
+}
+
 ReactDOM.render(
   <Provider store={store}>
     <Game />
   </Provider>,
-  document.getElementById('example')
+  document.getElementById("example")
 );
