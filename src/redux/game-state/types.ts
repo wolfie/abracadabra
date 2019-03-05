@@ -1,6 +1,5 @@
 import { values, pipe, map, all, any } from "ramda";
 import { isBoolean } from "util";
-import path from "ramda/es/path";
 
 export type ManaPool = {
   r: number;
@@ -35,10 +34,25 @@ export namespace ManaPool {
 }
 
 export type Card = {
+  castingCost: Partial<ManaPool>;
   name: string;
   id: number;
   abilities: Ability[];
 };
+
+export namespace Card {
+  export const getColor = (card: Card): (keyof ManaPool)[] => {
+    const result = (<[keyof ManaPool, number][]>(
+      Object.entries(card.castingCost)
+    )).reduce(
+      (acc, [color, costAmount]) =>
+        color !== "c" && costAmount > 0 ? [...acc, color] : acc,
+      [] as (keyof ManaPool)[]
+    );
+
+    return result.length > 0 ? result : ["c"];
+  };
+}
 
 export type Permanent = Card & {
   isTapped: boolean;

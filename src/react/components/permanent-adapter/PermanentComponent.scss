@@ -18,6 +18,25 @@
     transform: rotate(90deg);
   }
 
+  &.colorless {
+    background-color: #eeeeee;
+  }
+  &.red {
+    background-color: #ffeeee;
+  }
+  &.black {
+    background-color: #555555;
+  }
+  &.green {
+    background-color: #eeffee;
+  }
+  &.blue {
+    background-color: #eeeeff;
+  }
+  &.white {
+    background-color: #ffffff;
+  }
+
   & .nameplate {
     background-color: black;
     color: white;

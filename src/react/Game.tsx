@@ -32,6 +32,7 @@ const Game: React.FunctionComponent<Props> = ({ initBoard, board }) => (
 );
 
 const swamp: Permanent = {
+  castingCost: {},
   abilities: [Ability.TapForBlackMana],
   id: -1,
   isTapped: false,

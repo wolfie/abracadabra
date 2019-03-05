@@ -1,20 +1,18 @@
 import { gameStateReducer, getPermanent, initialState } from "./reducers";
-import {
-  tapPermanent,
-  activateAbility,
-  enterPermanentToBattlefield
-} from "./actions";
-import { GameState, Permanent, ActivationCost, Ability } from "./types";
+import { tapPermanent } from "./actions";
+import { GameState, Permanent } from "./types";
 import "jest";
 
 const CARD1: Permanent = {
   name: "Card1",
+  castingCost: {},
   isTapped: false,
   id: 0,
   abilities: []
 };
 const CARD2: Permanent = {
   name: "Card2",
+  castingCost: {},
   isTapped: false,
   id: 1,
   abilities: []

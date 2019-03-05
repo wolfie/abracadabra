@@ -4,7 +4,8 @@ import {
   Permanent,
   GameStateActions,
   GameState,
-  Ability
+  Ability,
+  Card
 } from "../../../redux/game-state/types";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -50,6 +51,7 @@ const PermanentAdapter: React.FunctionComponent<Props> = ({
 
   return (
     <PermanentComponent
+      color={Card.getColor(permanent)}
       isClickable={isClickable}
       name={permanent.name}
       isTapped={permanent.isTapped}
