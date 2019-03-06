@@ -148,6 +148,8 @@ export namespace Ability {
     )(permanent.abilities);
 }
 
+export type Zone = "hand" | null;
+
 export interface GameState {
   manaPool: ManaPool;
   health: number;
@@ -177,7 +179,16 @@ interface ActivateAbilityAction {
   abilityId: number;
 }
 
+export const MOVE_CARD_BETWEEN_ZONES = "MOVE_CARD_BETWEEN_ZONES";
+interface DrawCardAction {
+  type: typeof MOVE_CARD_BETWEEN_ZONES;
+  card: Card;
+  from: Zone;
+  to: Zone;
+}
+
 export type GameStateActions =
   | TapAction
   | EnterPermanentToBattlefieldAction
-  | ActivateAbilityAction;
+  | ActivateAbilityAction
+  | DrawCardAction;

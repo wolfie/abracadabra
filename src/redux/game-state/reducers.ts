@@ -4,6 +4,7 @@ import {
   TAP_PERMANENT,
   ENTER_PERMANENT_TO_BATTLEFIELD,
   ACTIVATE_ABILITY,
+  MOVE_CARD_BETWEEN_ZONES,
   Permanent,
   ActivationCost,
   ManaPool,
@@ -11,6 +12,7 @@ import {
 } from "./types";
 import { sum, values, pipe } from "ramda";
 import { tapPermanent, activateAbility } from "./actions";
+import HandAdapter from "../../react/components/hand-adapter/HandAdapter";
 
 const assert = (fn: (...args: any) => boolean): true => {
   if (!fn()) throw new Error("Assert error");
@@ -125,6 +127,8 @@ export const gameStateReducer = (
   state = initialState,
   action: GameStateActions
 ): GameState => {
+  if (action.type.startsWith("@@")) return state;
+
   switch (action.type) {
     case TAP_PERMANENT: {
       return tapPermanentReducer(state, action.id);
@@ -158,9 +162,18 @@ export const gameStateReducer = (
       return state;
     }
 
-    default:
-      return state;
+    case MOVE_CARD_BETWEEN_ZONES: {
+      if (action.from !== null)
+        throw new Error("unsupported from-zone: " + action.from);
 
+      if (action.to === "hand") {
+        state = { ...state, hand: [...state.hand, action.card] };
+      }
+
+      return state;
+    }
+
+    default:
       throw new Error(
         "Reducer not returning on action " + JSON.stringify(action)
       );

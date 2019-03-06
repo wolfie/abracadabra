@@ -5,11 +5,16 @@ import {
   GameStateActions,
   Permanent,
   GameState,
-  Ability
+  Ability,
+  Card
 } from "../redux/game-state/types";
-import { enterPermanentToBattlefield } from "../redux/game-state/actions";
+import {
+  enterPermanentToBattlefield,
+  moveCardsBetweenZones
+} from "../redux/game-state/actions";
 import PermanentAdapter from "./components/permanent-adapter/PermanentAdapter";
 import ManaPoolAdapter from "./components/manapool-adapter/ManaPoolAdapter";
+import HandAdapter from "./components/hand-adapter/HandAdapter";
 
 type DispatchProps = { initBoard: () => unknown };
 type StateProps = { board: Permanent[] };
@@ -28,21 +33,33 @@ const Game: React.FunctionComponent<Props> = ({ initBoard, board }) => (
     ) : (
       <button onClick={initBoard}>Init board</button>
     )}
+    <HandAdapter />
   </>
 );
 
 const swamp: Permanent = {
   castingCost: {},
   abilities: [Ability.TapForBlackMana],
-  id: -1,
+  id: 0,
   isTapped: false,
   name: "Swamp"
+};
+
+const darkRitual: Card = {
+  castingCost: { b: 1 },
+  abilities: [],
+  id: 1,
+  name: "Dark Ritual"
 };
 
 const mapDispatchToProps: (...x: any) => DispatchProps = (
   dispatch: Dispatch<GameStateActions>
 ) => ({
-  initBoard: () => dispatch(enterPermanentToBattlefield(swamp))
+  initBoard: () =>
+    dispatch([
+      enterPermanentToBattlefield(swamp),
+      moveCardsBetweenZones(darkRitual, null, "hand")
+    ])
 });
 
 const mapStateToProps: (...x: any) => StateProps = (state: GameState) => ({
