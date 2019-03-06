@@ -12,15 +12,6 @@ const store = createStore(
     anyWindow.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
-class Catcher extends React.Component {
-  componentDidCatch(e: Error) {
-    window.alert(e.message);
-  }
-  render() {
-    return this.props.children;
-  }
-}
-
 ReactDOM.render(
   <Provider store={store}>
     <Game />
