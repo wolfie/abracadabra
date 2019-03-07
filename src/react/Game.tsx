@@ -9,10 +9,9 @@ import {
   Card
 } from "../redux/game-state/types";
 import { moveCardsBetweenZones } from "../redux/game-state/actions";
-import PermanentAdapter from "./components/permanent-adapter/PermanentAdapter";
 import ManaPoolAdapter from "./components/manapool-adapter/ManaPoolAdapter";
 import HandAdapter from "./components/hand-adapter/HandAdapter";
-import CardstackComponent from "./components/card-stack-component/CardstackComponent";
+import BattlefieldAdapter from "./components/battlefield-adapter/BattlefieldAdapter";
 
 type DispatchProps = { initBoard: () => unknown };
 type StateProps = { board: Permanent[] };
@@ -23,11 +22,7 @@ const Game: React.FunctionComponent<Props> = ({ initBoard, board }) => (
   <>
     <ManaPoolAdapter />
     {board.length > 0 ? (
-      <CardstackComponent>
-        {board.map(permanent => (
-          <PermanentAdapter key={permanent.id} permanent={permanent} />
-        ))}
-      </CardstackComponent>
+      <BattlefieldAdapter />
     ) : (
       <button onClick={initBoard}>Init board</button>
     )}
