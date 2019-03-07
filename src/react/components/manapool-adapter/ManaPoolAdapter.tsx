@@ -11,7 +11,7 @@ type Props = StateProps;
 const ManaPoolAdapter: React.FunctionComponent<Props> = ({ manaPool }) => (
   <div className={css("manapool")}>
     {Object.entries(manaPool).map(([key, mana]) => (
-      <span className={css("color")}>
+      <span key={key} className={css("color")}>
         {key.toUpperCase()}: {mana}
       </span>
     ))}
