@@ -3,7 +3,6 @@ import PermanentComponent from "./PermanentComponent";
 import {
   Permanent,
   GameStateActions,
-  GameState,
   Ability,
   Card
 } from "../../../redux/game-state/types";
@@ -15,13 +14,11 @@ type DispatchProps = {
   activateAbility: (ability: number) => unknown;
 };
 
-type StateProps = {};
-
 type NativeProps = {
   permanent: Permanent;
 };
 
-type Props = DispatchProps & NativeProps & StateProps;
+type Props = DispatchProps & NativeProps;
 
 const activateAbilityMaybe = (
   permanent: Permanent,
@@ -60,8 +57,6 @@ const PermanentAdapter: React.FunctionComponent<Props> = ({
   );
 };
 
-const mapStateToProps: (...x: any) => StateProps = (state: GameState) => ({});
-
 const mapDispatchToProps: (...x: any) => DispatchProps = (
   dispatch: Dispatch<GameStateActions>,
   { permanent: { id } }: Props
@@ -70,6 +65,6 @@ const mapDispatchToProps: (...x: any) => DispatchProps = (
 });
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps
 )(PermanentAdapter);
