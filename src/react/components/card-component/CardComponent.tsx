@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as styles from "./PermanentComponent.scss";
+import * as styles from "./CardComponent.scss";
 import * as classnames from "classnames/bind";
 import { ManaPool } from "../../../redux/game-state/types";
 
@@ -9,7 +9,7 @@ export interface CardProps {
   isTapped?: boolean;
   name?: string;
   isClickable?: boolean;
-  onClick: () => any;
+  onClick?: (...args: any) => any;
   highlight?: boolean;
   color: (keyof ManaPool)[];
 }
@@ -19,16 +19,18 @@ const CardComponent: React.FunctionComponent<CardProps> = props => {
     isTapped = false,
     name = "",
     isClickable = false,
-    onClick,
+    onClick = () => {},
     color
   } = props;
 
   const isColor = (queryColor: keyof ManaPool): boolean =>
     color.indexOf(queryColor) !== -1;
 
+  const ifIsClickable = (fn: () => any) => (isClickable ? fn : () => {});
+
   return (
     <div
-      onClick={onClick}
+      onClick={ifIsClickable(onClick)}
       className={css("card", {
         black: isColor("b"),
         blue: isColor("u"),

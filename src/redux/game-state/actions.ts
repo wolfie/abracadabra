@@ -1,9 +1,7 @@
 import {
   TAP_PERMANENT,
-  ENTER_PERMANENT_TO_BATTLEFIELD,
   MOVE_CARD_BETWEEN_ZONES,
   ACTIVATE_ABILITY,
-  Permanent,
   GameStateActions,
   Card,
   Zone
@@ -12,13 +10,6 @@ import {
 export const tapPermanent = (id: number): GameStateActions => ({
   type: TAP_PERMANENT,
   id
-});
-
-export const enterPermanentToBattlefield = (
-  permanent: Permanent
-): GameStateActions => ({
-  type: ENTER_PERMANENT_TO_BATTLEFIELD,
-  permanent
 });
 
 export const activateAbility = (

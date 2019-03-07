@@ -1,5 +1,5 @@
 import * as React from "react";
-import PermanentComponent from "./PermanentComponent";
+import CardComponent from "../card-component/CardComponent";
 import {
   Permanent,
   GameStateActions,
@@ -47,7 +47,7 @@ const PermanentAdapter: React.FunctionComponent<Props> = ({
   };
 
   return (
-    <PermanentComponent
+    <CardComponent
       color={Card.getColor(permanent)}
       isClickable={isClickable}
       name={permanent.name}

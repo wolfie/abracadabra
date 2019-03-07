@@ -1,7 +1,8 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Card, GameState } from "../../../redux/game-state/types";
-import PermanentAdapter from "../permanent-adapter/PermanentAdapter";
+import HandCardAdapter from "../hand-card-adapter/HandCardAdapter";
+import CardstackComponent from "../card-stack-component/CardstackComponent";
 
 type StateProps = {
   hand: Card[];
@@ -10,13 +11,11 @@ type StateProps = {
 type Props = StateProps;
 
 const HandAdapter: React.FunctionComponent<Props> = ({ hand }) => (
-  <>
-    <div>Hand</div>
+  <CardstackComponent>
     {hand.map(card => (
-      // this needs to change to a "hand card adapter" or whatever.
-      <PermanentAdapter permanent={card} />
+      <HandCardAdapter key={card.id} card={card} />
     ))}
-  </>
+  </CardstackComponent>
 );
 
 const mapStateToProps = (state: GameState): StateProps => ({

@@ -2,25 +2,20 @@ import {
   GameState,
   GameStateActions,
   TAP_PERMANENT,
-  ENTER_PERMANENT_TO_BATTLEFIELD,
   ACTIVATE_ABILITY,
   MOVE_CARD_BETWEEN_ZONES,
   Permanent,
   ActivationCost,
   ManaPool,
-  Ability
+  Ability,
+  Card
 } from "./types";
 import { sum, values, pipe } from "ramda";
-import { tapPermanent, activateAbility } from "./actions";
-import HandAdapter from "../../react/components/hand-adapter/HandAdapter";
 
 const assert = (fn: (...args: any) => boolean): true => {
   if (!fn()) throw new Error("Assert error");
   return true;
 };
-
-const noDuplicateIds = (board: Permanent[], id: number) => (): boolean =>
-  !board.find(permanent => permanent.id === id);
 
 export const initialState: GameState = {
   manaPool: ManaPool.Empty,
@@ -134,13 +129,44 @@ export const gameStateReducer = (
       return tapPermanentReducer(state, action.id);
     }
 
-    case ENTER_PERMANENT_TO_BATTLEFIELD: {
-      return (
-        assert(noDuplicateIds(state.board, action.permanent.id)) && {
-          ...state,
-          board: [...state.board, action.permanent]
-        }
-      );
+    case MOVE_CARD_BETWEEN_ZONES: {
+      const cardMatchesActionCard = (card: Card) => card.id === action.card.id;
+      const cardNotActionCard = (card: Card) => card.id !== action.card.id;
+
+      switch (action.from) {
+        case null:
+          break;
+        case "hand":
+          assert(() => state.hand.find(cardMatchesActionCard) !== undefined);
+          state = {
+            ...state,
+            hand: state.hand.filter(cardNotActionCard)
+          };
+          break;
+        case "battlefield":
+          assert(() => state.board.find(cardMatchesActionCard) !== undefined);
+          state = { ...state, board: state.board.filter(cardNotActionCard) };
+        default:
+          throw new Error("unsupported from-zone: " + action.from);
+      }
+
+      switch (action.to) {
+        case null:
+          break;
+        case "hand":
+          state = { ...state, hand: [...state.hand, action.card] };
+          break;
+        case "battlefield":
+          state = {
+            ...state,
+            board: [...state.board, { ...action.card, isTapped: false }]
+          };
+          break;
+        default:
+          throw new Error("unsupported to-zone: " + action.to);
+      }
+
+      return state;
     }
 
     case ACTIVATE_ABILITY: {
@@ -157,17 +183,6 @@ export const gameStateReducer = (
         state = gainPossibleManaReducer(state, activatedAbility);
       } else {
         throw new Error("Stack abilities not supported");
-      }
-
-      return state;
-    }
-
-    case MOVE_CARD_BETWEEN_ZONES: {
-      if (action.from !== null)
-        throw new Error("unsupported from-zone: " + action.from);
-
-      if (action.to === "hand") {
-        state = { ...state, hand: [...state.hand, action.card] };
       }
 
       return state;

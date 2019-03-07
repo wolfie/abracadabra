@@ -148,7 +148,7 @@ export namespace Ability {
     )(permanent.abilities);
 }
 
-export type Zone = "hand" | null;
+export type Zone = "hand" | "battlefield" | null;
 
 export interface GameState {
   manaPool: ManaPool;
@@ -166,12 +166,6 @@ interface TapAction {
   id: number;
 }
 
-export const ENTER_PERMANENT_TO_BATTLEFIELD = "ENTER_PERMANENT_TO_BATTLEFIELD";
-interface EnterPermanentToBattlefieldAction {
-  type: typeof ENTER_PERMANENT_TO_BATTLEFIELD;
-  permanent: Permanent;
-}
-
 export const ACTIVATE_ABILITY = "ACTIVATE_ABILITY";
 interface ActivateAbilityAction {
   type: typeof ACTIVATE_ABILITY;
@@ -180,7 +174,7 @@ interface ActivateAbilityAction {
 }
 
 export const MOVE_CARD_BETWEEN_ZONES = "MOVE_CARD_BETWEEN_ZONES";
-interface DrawCardAction {
+interface MoveCardBetweenZonesAction {
   type: typeof MOVE_CARD_BETWEEN_ZONES;
   card: Card;
   from: Zone;
@@ -189,6 +183,5 @@ interface DrawCardAction {
 
 export type GameStateActions =
   | TapAction
-  | EnterPermanentToBattlefieldAction
   | ActivateAbilityAction
-  | DrawCardAction;
+  | MoveCardBetweenZonesAction;
