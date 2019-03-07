@@ -11,7 +11,7 @@ import { Dispatch } from "redux";
 import { activateAbility } from "../../../redux/game-state/actions";
 
 type DispatchProps = {
-  activateAbility: (ability: number) => unknown;
+  activateAbility: (permanentId: number) => (ability: number) => unknown;
 };
 
 type NativeProps = {
@@ -43,7 +43,7 @@ const PermanentAdapter: React.FunctionComponent<Props> = ({
   const onClickHandler = () => {
     if (!isClickable) return;
 
-    activateAbilityMaybe(permanent, activateAbility);
+    activateAbilityMaybe(permanent, activateAbility(permanent.id));
   };
 
   return (
@@ -57,11 +57,11 @@ const PermanentAdapter: React.FunctionComponent<Props> = ({
   );
 };
 
-const mapDispatchToProps: (...x: any) => DispatchProps = (
-  dispatch: Dispatch<GameStateActions>,
-  { permanent: { id } }: Props
-) => ({
-  activateAbility: (ability: number) => dispatch(activateAbility(id, ability))
+const mapDispatchToProps = (
+  dispatch: Dispatch<GameStateActions>
+): DispatchProps => ({
+  activateAbility: (permanentId: number) => (ability: number) =>
+    dispatch(activateAbility(permanentId, ability))
 });
 
 export default connect(

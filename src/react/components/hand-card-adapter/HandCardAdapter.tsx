@@ -22,7 +22,9 @@ const HandCardAdapter: React.FunctionComponent<Props> = ({ card, cast }) => (
   />
 );
 
-const mapDispatchToProps = (dispatch: Dispatch<GameStateActions>) => ({
+const mapDispatchToProps = (
+  dispatch: Dispatch<GameStateActions>
+): DispatchProps => ({
   cast: (card: Card) => () =>
     dispatch(moveCardsBetweenZones(card, "hand", "battlefield"))
 });

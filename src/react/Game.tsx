@@ -50,9 +50,9 @@ const darkRitual: Card = {
   name: "Dark Ritual"
 };
 
-const mapDispatchToProps: (...x: any) => DispatchProps = (
+const mapDispatchToProps = (
   dispatch: Dispatch<GameStateActions>
-) => ({
+): DispatchProps => ({
   initBoard: () =>
     dispatch([
       moveCardsBetweenZones(swamp, null, "battlefield"),
@@ -60,7 +60,7 @@ const mapDispatchToProps: (...x: any) => DispatchProps = (
     ])
 });
 
-const mapStateToProps: (...x: any) => StateProps = (state: GameState) => ({
+const mapStateToProps = (state: GameState): StateProps => ({
   board: state.board
 });
 
