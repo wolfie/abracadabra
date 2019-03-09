@@ -4,10 +4,7 @@ import { Card, GameState } from '../../../redux/game-state/types';
 import HandCardAdapter from '../hand-card-adapter/HandCardAdapter';
 import CardstackComponent from '../card-stack-component/CardstackComponent';
 
-type StateProps = {
-  hand: Card[];
-};
-
+type StateProps = { hand: Card[] };
 type Props = StateProps;
 
 const HandAdapter: React.FunctionComponent<Props> = ({ hand }) => (

@@ -5,13 +5,9 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { moveCardsBetweenZones } from '../../../redux/game-state/actions';
 
-type DispatchProps = {
-  cast: (card: Card) => any;
-};
-
-type Props = DispatchProps & {
-  card: Card;
-};
+type DispatchProps = { cast: (card: Card) => any };
+type OwnProps = { card: Card };
+type Props = DispatchProps & OwnProps;
 
 const HandCardAdapter: React.FunctionComponent<Props> = ({ card, cast }) => (
   <CardComponent

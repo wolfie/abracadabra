@@ -4,10 +4,7 @@ import { GameState, Permanent } from '../../../redux/game-state/types';
 import CardstackComponent from '../card-stack-component/CardstackComponent';
 import PermanentAdapter from '../permanent-adapter/PermanentAdapter';
 
-type StateProps = {
-  board: Permanent[];
-};
-
+type StateProps = { board: Permanent[] };
 type Props = StateProps;
 
 const BattlefieldAdapter: React.FunctionComponent<Props> = ({ board }) => (

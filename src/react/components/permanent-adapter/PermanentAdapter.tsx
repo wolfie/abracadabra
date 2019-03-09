@@ -13,11 +13,7 @@ import { activateAbility } from '../../../redux/game-state/actions';
 type DispatchProps = {
   activateAbility: (permanentId: number) => (ability: number) => unknown;
 };
-
-type NativeProps = {
-  permanent: Permanent;
-};
-
+type NativeProps = { permanent: Permanent };
 type Props = DispatchProps & NativeProps;
 
 const activateAbilityMaybe = (
