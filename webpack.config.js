@@ -11,15 +11,6 @@ const CSSModuleLoader = {
   }
 };
 
-const CSSLoader = {
-  loader: 'css-loader',
-  options: {
-    modules: false,
-    sourceMap: true,
-    minimize: true
-  }
-};
-
 const postCSSLoader = {
   loader: 'postcss-loader',
   options: {
@@ -59,11 +50,6 @@ module.exports = {
 
       {
         test: /\.scss$/,
-        exclude: /\.module\.scss$/,
-        use: ['style-loader', CSSLoader, postCSSLoader, 'sass-loader']
-      },
-      {
-        test: /\.module\.scss$/,
         use: ['style-loader', CSSModuleLoader, postCSSLoader, 'sass-loader']
       }
     ]
