@@ -11,11 +11,14 @@ type StateProps = {
 type Props = StateProps;
 
 const HandAdapter: React.FunctionComponent<Props> = ({ hand }) => (
-  <CardstackComponent>
-    {hand.map(card => (
-      <HandCardAdapter key={card.id} card={card} />
-    ))}
-  </CardstackComponent>
+  <>
+    <h1>Hand:</h1>
+    <CardstackComponent>
+      {hand.map(card => (
+        <HandCardAdapter key={card.id} card={card} />
+      ))}
+    </CardstackComponent>
+  </>
 );
 
 const mapStateToProps = (state: GameState): StateProps => ({

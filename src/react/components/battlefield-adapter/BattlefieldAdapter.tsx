@@ -11,11 +11,14 @@ type StateProps = {
 type Props = StateProps;
 
 const BattlefieldAdapter: React.FunctionComponent<Props> = ({ board }) => (
-  <CardstackComponent>
-    {board.map(permanent => (
-      <PermanentAdapter key={permanent.id} permanent={permanent} />
-    ))}
-  </CardstackComponent>
+  <>
+    <h1>Battlefield:</h1>
+    <CardstackComponent>
+      {board.map(permanent => (
+        <PermanentAdapter key={permanent.id} permanent={permanent} />
+      ))}
+    </CardstackComponent>
+  </>
 );
 
 const mapStateToProps = (state: GameState): StateProps => ({
