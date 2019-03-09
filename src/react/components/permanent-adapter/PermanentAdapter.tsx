@@ -11,24 +11,10 @@ import { Dispatch } from 'redux';
 import { activateAbility } from '../../../redux/game-state/actions';
 
 type DispatchProps = {
-  activateAbility: (permanentId: number) => (ability: number) => unknown;
+  activateAbility: (permanentId: number, abilityId: number) => unknown;
 };
 type NativeProps = { permanent: Permanent };
 type Props = DispatchProps & NativeProps;
-
-const activateAbilityMaybe = (
-  permanent: Permanent,
-  activateAbility: (ability: number) => unknown
-) => {
-  switch (permanent.abilities.length) {
-    case 0:
-      return;
-    case 1:
-      return activateAbility(0);
-    default:
-      return window.alert('too many actions to handle!');
-  }
-};
 
 const PermanentAdapter: React.FunctionComponent<Props> = ({
   activateAbility,
@@ -36,11 +22,19 @@ const PermanentAdapter: React.FunctionComponent<Props> = ({
 }) => {
   const isClickable = Ability.hasLegalAbilities(permanent);
 
-  const onClickHandler = () => {
-    if (!isClickable) return;
-
-    activateAbilityMaybe(permanent, activateAbility(permanent.id));
+  const chooseAbility = () => {
+    switch (permanent.abilities.length) {
+      case 0:
+        return;
+      case 1:
+        return activateAbility(permanent.id, 0);
+      default:
+        // todo: Open some kind of dialogue
+        return window.alert('too many actions to handle!');
+    }
   };
+
+  const ifIsClickable = (fn: () => unknown) => (isClickable ? fn : () => {});
 
   return (
     <CardComponent
@@ -48,7 +42,7 @@ const PermanentAdapter: React.FunctionComponent<Props> = ({
       isClickable={isClickable}
       name={permanent.name}
       isTapped={permanent.isTapped}
-      onClick={onClickHandler}
+      onClick={ifIsClickable(chooseAbility)}
     />
   );
 };
@@ -56,8 +50,8 @@ const PermanentAdapter: React.FunctionComponent<Props> = ({
 const mapDispatchToProps = (
   dispatch: Dispatch<GameStateActions>
 ): DispatchProps => ({
-  activateAbility: (permanentId: number) => (ability: number) =>
-    dispatch(activateAbility(permanentId, ability))
+  activateAbility: (permanentId, abilityId) =>
+    dispatch(activateAbility(permanentId, abilityId))
 });
 
 export default connect(
