@@ -1,7 +1,7 @@
-import * as React from "react";
-import * as styles from "./CardComponent.scss";
-import * as classnames from "classnames/bind";
-import { ManaPool } from "../../../redux/game-state/types";
+import * as React from 'react';
+import * as styles from './CardComponent.scss';
+import * as classnames from 'classnames/bind';
+import { ManaPool } from '../../../redux/game-state/types';
 
 const css = classnames.bind(styles);
 
@@ -17,7 +17,7 @@ export interface CardProps {
 const CardComponent: React.FunctionComponent<CardProps> = props => {
   const {
     isTapped = false,
-    name = "",
+    name = '',
     isClickable = false,
     onClick = () => {},
     color
@@ -31,18 +31,18 @@ const CardComponent: React.FunctionComponent<CardProps> = props => {
   return (
     <div
       onClick={ifIsClickable(onClick)}
-      className={css("card", {
-        black: isColor("b"),
-        blue: isColor("u"),
-        green: isColor("g"),
-        red: isColor("r"),
-        white: isColor("w"),
-        colorless: isColor("c"),
+      className={css('card', {
+        black: isColor('b'),
+        blue: isColor('u'),
+        green: isColor('g'),
+        red: isColor('r'),
+        white: isColor('w'),
+        colorless: isColor('c'),
         isClickable,
         isTapped
       })}
     >
-      <div className={css("nameplate")}>{name || <>&nbsp;</>}</div>
+      <div className={css('nameplate')}>{name || <>&nbsp;</>}</div>
     </div>
   );
 };

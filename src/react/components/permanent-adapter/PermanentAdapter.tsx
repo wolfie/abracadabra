@@ -1,14 +1,14 @@
-import * as React from "react";
-import CardComponent from "../card-component/CardComponent";
+import * as React from 'react';
+import CardComponent from '../card-component/CardComponent';
 import {
   Permanent,
   GameStateActions,
   Ability,
   Card
-} from "../../../redux/game-state/types";
-import { connect } from "react-redux";
-import { Dispatch } from "redux";
-import { activateAbility } from "../../../redux/game-state/actions";
+} from '../../../redux/game-state/types';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { activateAbility } from '../../../redux/game-state/actions';
 
 type DispatchProps = {
   activateAbility: (permanentId: number) => (ability: number) => unknown;
@@ -30,7 +30,7 @@ const activateAbilityMaybe = (
     case 1:
       return activateAbility(0);
     default:
-      return window.alert("too many actions to handle!");
+      return window.alert('too many actions to handle!');
   }
 };
 
