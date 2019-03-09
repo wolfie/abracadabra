@@ -1,5 +1,5 @@
-import { values, pipe, map, all, any } from "ramda";
-import { isBoolean } from "util";
+import { values, pipe, map, all, any } from 'ramda';
+import { isBoolean } from 'util';
 
 export type ManaPool = {
   r: number;
@@ -46,11 +46,11 @@ export namespace Card {
       Object.entries(card.castingCost)
     )).reduce(
       (acc, [color, costAmount]) =>
-        color !== "c" && costAmount > 0 ? [...acc, color] : acc,
+        color !== 'c' && costAmount > 0 ? [...acc, color] : acc,
       [] as (keyof ManaPool)[]
     );
 
-    return result.length > 0 ? result : ["c"];
+    return result.length > 0 ? result : ['c'];
   };
 }
 
@@ -89,7 +89,7 @@ export namespace ActivationCost {
   );
 }
 
-type EffectSpeed = "mana" | "instant" | "sorcery";
+type EffectSpeed = 'mana' | 'instant' | 'sorcery';
 
 export interface ManaAbility extends Ability {
   isManaAbility: true;
@@ -121,7 +121,7 @@ export namespace Ability {
     ability.isManaAbility;
 
   export const Empty: Ability = {
-    speed: "instant",
+    speed: 'instant',
     isManaAbility: false,
     usesStack: true,
     effect: () => {},
@@ -129,7 +129,7 @@ export namespace Ability {
   };
 
   export const getManaAbility = (gain: Partial<ManaPool>): ManaAbility => ({
-    speed: "mana",
+    speed: 'mana',
     isManaAbility: true,
     usesStack: false,
     effect: () => gain,
@@ -148,7 +148,7 @@ export namespace Ability {
     )(permanent.abilities);
 }
 
-export type Zone = "hand" | "battlefield" | null;
+export type Zone = 'hand' | 'battlefield' | null;
 
 export interface GameState {
   manaPool: ManaPool;
@@ -160,20 +160,20 @@ export interface GameState {
   nextCardId: number;
 }
 
-export const TAP_PERMANENT = "TAP_PERMANENT";
+export const TAP_PERMANENT = 'TAP_PERMANENT';
 interface TapAction {
   type: typeof TAP_PERMANENT;
   id: number;
 }
 
-export const ACTIVATE_ABILITY = "ACTIVATE_ABILITY";
+export const ACTIVATE_ABILITY = 'ACTIVATE_ABILITY';
 interface ActivateAbilityAction {
   type: typeof ACTIVATE_ABILITY;
   permanentId: number;
   abilityId: number;
 }
 
-export const MOVE_CARD_BETWEEN_ZONES = "MOVE_CARD_BETWEEN_ZONES";
+export const MOVE_CARD_BETWEEN_ZONES = 'MOVE_CARD_BETWEEN_ZONES';
 interface MoveCardBetweenZonesAction {
   type: typeof MOVE_CARD_BETWEEN_ZONES;
   card: Card;
