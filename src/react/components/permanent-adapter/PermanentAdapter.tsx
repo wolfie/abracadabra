@@ -43,6 +43,7 @@ const PermanentAdapter: React.FunctionComponent<Props> = ({
       name={permanent.name}
       isTapped={permanent.isTapped}
       onClick={ifIsClickable(chooseAbility)}
+      typeInfo={permanent.typeInfo}
     />
   );
 };

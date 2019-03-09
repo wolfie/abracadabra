@@ -1,26 +1,31 @@
 import * as React from 'react';
 import * as styles from './CardComponent.scss';
 import * as classnames from 'classnames/bind';
-import { ManaPool } from '../../../redux/game-state/types';
+import { ManaPool, CardTypeInfo } from '../../../redux/game-state/types';
 
 const css = classnames.bind(styles);
 
-export interface CardProps {
+export interface Props {
   isTapped?: boolean;
   name?: string;
   isClickable?: boolean;
   onClick?: (...args: any) => any;
   highlight?: boolean;
   color: (keyof ManaPool)[];
+  typeInfo: CardTypeInfo;
 }
 
-const CardComponent: React.FunctionComponent<CardProps> = props => {
+const getTypeLine = ({ superType, types }: CardTypeInfo) =>
+  (superType ? `${superType} ` : '') + types.join(' ');
+
+const CardComponent: React.FunctionComponent<Props> = props => {
   const {
     isTapped = false,
     name = '',
     isClickable = false,
     onClick = () => {},
-    color
+    color,
+    typeInfo
   } = props;
 
   const isColor = (queryColor: keyof ManaPool): boolean =>
@@ -43,6 +48,7 @@ const CardComponent: React.FunctionComponent<CardProps> = props => {
       })}
     >
       <div className={css('nameplate')}>{name || <>&nbsp;</>}</div>
+      <div className={css('typeline')}>{getTypeLine(typeInfo)}</div>
     </div>
   );
 };

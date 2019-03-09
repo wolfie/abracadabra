@@ -7,6 +7,7 @@ import {
   GameState,
   Ability,
   Card,
+  CardTypeInfo
 } from '../redux/game-state/types';
 import { moveCardsBetweenZones } from '../redux/game-state/actions';
 import ManaPoolAdapter from './components/manapool-adapter/ManaPoolAdapter';
@@ -36,6 +37,7 @@ const swamp: Permanent = {
   id: 0,
   isTapped: false,
   name: 'Swamp',
+  typeInfo: CardTypeInfo.Swamp
 };
 
 const darkRitual: Card = {
@@ -43,6 +45,7 @@ const darkRitual: Card = {
   abilities: [],
   id: 1,
   name: 'Dark Ritual',
+  typeInfo: CardTypeInfo.Instant
 };
 
 const mapDispatchToProps = (

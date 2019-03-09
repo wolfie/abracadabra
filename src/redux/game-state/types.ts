@@ -33,11 +33,29 @@ export namespace ManaPool {
   });
 }
 
+export type CardSuperType = 'basic';
+export type CardType = 'instant' | 'land' | 'swamp';
+export type CardTypeInfo = {
+  superType?: CardSuperType;
+  types: CardType[];
+};
+
+export namespace CardTypeInfo {
+  const BasicLand = (landType: CardType): CardTypeInfo => ({
+    superType: 'basic',
+    types: ['land', landType]
+  });
+
+  export const Swamp: CardTypeInfo = BasicLand('swamp');
+  export const Instant: CardTypeInfo = { types: ['instant'] };
+}
+
 export type Card = {
   castingCost: Partial<ManaPool>;
   name: string;
   id: number;
   abilities: Ability[];
+  typeInfo: CardTypeInfo;
 };
 
 export namespace Card {

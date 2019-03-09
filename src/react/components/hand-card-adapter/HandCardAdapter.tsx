@@ -15,6 +15,7 @@ const HandCardAdapter: React.FunctionComponent<Props> = ({ card, cast }) => (
     name={card.name}
     isClickable={true}
     onClick={cast(card)}
+    typeInfo={card.typeInfo}
   />
 );
 

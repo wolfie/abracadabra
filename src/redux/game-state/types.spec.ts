@@ -6,6 +6,7 @@ const cardWithCost = (castingCost: Partial<ManaPool>): Card => ({
   abilities: [],
   id: 0,
   name: '',
+  typeInfo: { types: [] }
 });
 
 describe('Card', () => {
