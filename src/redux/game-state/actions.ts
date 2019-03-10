@@ -1,11 +1,13 @@
 import {
-  TAP_PERMANENT,
-  MOVE_CARD_BETWEEN_ZONES,
   ACTIVATE_ABILITY,
+  CAST,
+  MOVE_CARD_BETWEEN_ZONES,
+  POP_STACK,
+  TAP_PERMANENT,
   GameStateActions,
   Card,
   Zone
-} from "./types";
+} from './types';
 
 export const tapPermanent = (id: number): GameStateActions => ({
   type: TAP_PERMANENT,
@@ -30,4 +32,13 @@ export const moveCardsBetweenZones = (
   card,
   from,
   to
+});
+
+export const cast = (card: Card): GameStateActions => ({
+  type: CAST,
+  card
+});
+
+export const popStack = (): GameStateActions => ({
+  type: POP_STACK
 });

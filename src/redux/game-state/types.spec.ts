@@ -2,12 +2,8 @@ import 'jest';
 import { Card, ManaPool } from './types';
 
 const cardWithCost = (castingCost: Partial<ManaPool>): Card => ({
-  castingCost,
-  abilities: [],
-  effects: [],
-  id: 0,
-  name: '',
-  typeInfo: { types: [] }
+  ...Card.NULL,
+  castingCost
 });
 
 describe('Card', () => {

@@ -1,4 +1,4 @@
-import { gameStateReducer, getPermanent, initialState } from './reducers';
+import { gameStateReducer, getPermanent } from './reducers';
 import { tapPermanent } from './actions';
 import { GameState, Permanent } from './types';
 import 'jest';
@@ -6,7 +6,7 @@ import 'jest';
 const PERMANENT1: Permanent = { ...Permanent.NULL, name: 'Card1' };
 const PERMANENT2: Permanent = { ...Permanent.NULL, name: 'Card2' };
 
-const initialGameState = initialState;
+const initialGameState = GameState.NULL;
 const gameWithOneCard: GameState = {
   ...initialGameState,
   board: [PERMANENT1]

@@ -1,6 +1,5 @@
 import { values, pipe, map, all, any } from 'ramda';
 import { isBoolean } from 'util';
-import { Effect } from '../effects';
 
 export type ManaPool = {
   r: number;
@@ -51,12 +50,19 @@ export namespace CardTypeInfo {
   export const Instant: CardTypeInfo = { types: ['instant'] };
 }
 
+export type CardLifetimeEventHandler = (state: GameState) => GameState;
+
+export namespace CardLifetimeEventHandler {
+  export const NULL: CardLifetimeEventHandler = state => state;
+}
+
 export type Card = {
   castingCost: Partial<ManaPool>;
   name: string;
   id: number;
   abilities: Ability[];
-  effects: Effect[];
+  onCast: CardLifetimeEventHandler;
+  onResolve: CardLifetimeEventHandler;
   typeInfo: CardTypeInfo;
 };
 
@@ -65,9 +71,10 @@ export namespace Card {
     castingCost: {},
     name: '',
     id: 0,
-    effects: [],
     abilities: [],
-    typeInfo: { types: [] }
+    typeInfo: { types: [] },
+    onCast: state => state,
+    onResolve: state => state
   };
 
   export const getColor = (card: Card): (keyof ManaPool)[] => {
@@ -173,7 +180,7 @@ export namespace Ability {
     )(permanent.abilities);
 }
 
-export type Zone = 'hand' | 'battlefield' | null;
+export type Zone = 'hand' | 'battlefield' | 'stack' | null;
 
 export interface GameState {
   manaPool: ManaPool;
@@ -181,8 +188,22 @@ export interface GameState {
   hand: Card[];
   board: Permanent[];
   deck: Card[];
+  stack: Card[];
   graveyard: Card[];
   nextCardId: number;
+}
+
+export namespace GameState {
+  export const NULL: GameState = {
+    manaPool: ManaPool.NULL,
+    board: [],
+    graveyard: [],
+    hand: [],
+    deck: [],
+    stack: [],
+    health: 20,
+    nextCardId: 0
+  };
 }
 
 export const TAP_PERMANENT = 'TAP_PERMANENT';
@@ -206,7 +227,20 @@ interface MoveCardBetweenZonesAction {
   to: Zone;
 }
 
+export const CAST = 'CAST';
+interface CastAction {
+  type: typeof CAST;
+  card: Card;
+}
+
+export const POP_STACK = 'POP_STACK';
+interface PopStackAction {
+  type: typeof POP_STACK;
+}
+
 export type GameStateActions =
   | TapAction
   | ActivateAbilityAction
-  | MoveCardBetweenZonesAction;
+  | MoveCardBetweenZonesAction
+  | CastAction
+  | PopStackAction;

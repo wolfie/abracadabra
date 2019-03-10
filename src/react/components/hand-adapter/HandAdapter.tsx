@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Card, GameState } from '../../../redux/game-state/types';
-import HandCardAdapter from '../hand-card-adapter/HandCardAdapter';
+import HandCardAdapter from './HandCardAdapter';
 import CardstackComponent from '../card-stack-component/CardstackComponent';
 
 type StateProps = { hand: Card[] };

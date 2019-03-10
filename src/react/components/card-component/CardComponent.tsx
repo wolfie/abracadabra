@@ -7,7 +7,7 @@ const css = classnames.bind(styles);
 
 export interface Props {
   isTapped?: boolean;
-  name?: string;
+  name: string;
   isClickable?: boolean;
   onClick?: (...args: any) => any;
   highlight?: boolean;
@@ -21,7 +21,7 @@ const getTypeLine = ({ superType, types }: CardTypeInfo) =>
 const CardComponent: React.FunctionComponent<Props> = props => {
   const {
     isTapped = false,
-    name = '',
+    name,
     isClickable = false,
     onClick = () => {},
     color,

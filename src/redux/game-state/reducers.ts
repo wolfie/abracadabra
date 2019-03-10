@@ -8,23 +8,16 @@ import {
   ActivationCost,
   ManaPool,
   Ability,
-  Card
+  Card,
+  Zone,
+  CAST,
+  POP_STACK
 } from './types';
 import { sum, values, pipe } from 'ramda';
 
 const assert = (fn: (...args: any) => boolean): true => {
   if (!fn()) throw new Error('Assert error');
   return true;
-};
-
-export const initialState: GameState = {
-  manaPool: ManaPool.NULL,
-  board: [],
-  graveyard: [],
-  hand: [],
-  deck: [],
-  health: 20,
-  nextCardId: 0
 };
 
 export const getPermanent = (state: GameState, id: number): Permanent => {
@@ -119,8 +112,61 @@ const gainPossibleManaReducer = (
     ? { ...state, manaPool: ManaPool.Add(state.manaPool, ability.effect()) }
     : state;
 
+export const moveCardBetweenZonesReducer = (
+  state: GameState,
+  card: Card,
+  from: Zone,
+  to: Zone
+): GameState => {
+  const thisCard = (card_: Card) => card_.id === card.id;
+  const notThisCard = (card_: Card) => card_.id !== card.id;
+
+  switch (from) {
+    case null:
+      break;
+    case 'hand':
+      assert(() => state.hand.find(thisCard) !== undefined);
+      state = {
+        ...state,
+        hand: state.hand.filter(notThisCard)
+      };
+      break;
+    case 'battlefield':
+      assert(() => state.board.find(thisCard) !== undefined);
+      state = { ...state, board: state.board.filter(notThisCard) };
+      break;
+    case 'stack':
+      assert(() => state.stack.find(thisCard) !== undefined);
+      state = { ...state, stack: state.stack.filter(notThisCard) };
+      break;
+    default:
+      throw new Error('unsupported from-zone: ' + from);
+  }
+
+  switch (to) {
+    case null:
+      break;
+    case 'hand':
+      state = { ...state, hand: [...state.hand, card] };
+      break;
+    case 'battlefield':
+      state = {
+        ...state,
+        board: [...state.board, { ...card, isTapped: false }]
+      };
+      break;
+    case 'stack':
+      state = { ...state, stack: [...state.stack, card] };
+      break;
+    default:
+      throw new Error('unsupported to-zone: ' + to);
+  }
+
+  return state;
+};
+
 export const gameStateReducer = (
-  state = initialState,
+  state = GameState.NULL,
   action: GameStateActions
 ): GameState => {
   if (action.type.startsWith('@@')) return state;
@@ -130,45 +176,13 @@ export const gameStateReducer = (
       return tapPermanentReducer(state, action.id);
     }
 
-    case MOVE_CARD_BETWEEN_ZONES: {
-      const cardMatchesActionCard = (card: Card) => card.id === action.card.id;
-      const cardNotActionCard = (card: Card) => card.id !== action.card.id;
-
-      switch (action.from) {
-        case null:
-          break;
-        case 'hand':
-          assert(() => state.hand.find(cardMatchesActionCard) !== undefined);
-          state = {
-            ...state,
-            hand: state.hand.filter(cardNotActionCard)
-          };
-          break;
-        case 'battlefield':
-          assert(() => state.board.find(cardMatchesActionCard) !== undefined);
-          state = { ...state, board: state.board.filter(cardNotActionCard) };
-        default:
-          throw new Error('unsupported from-zone: ' + action.from);
-      }
-
-      switch (action.to) {
-        case null:
-          break;
-        case 'hand':
-          state = { ...state, hand: [...state.hand, action.card] };
-          break;
-        case 'battlefield':
-          state = {
-            ...state,
-            board: [...state.board, { ...action.card, isTapped: false }]
-          };
-          break;
-        default:
-          throw new Error('unsupported to-zone: ' + action.to);
-      }
-
-      return state;
-    }
+    case MOVE_CARD_BETWEEN_ZONES:
+      return moveCardBetweenZonesReducer(
+        state,
+        action.card,
+        action.from,
+        action.to
+      );
 
     case ACTIVATE_ABILITY: {
       let activatedPermanent = getPermanent(state, action.permanentId);
@@ -186,6 +200,20 @@ export const gameStateReducer = (
         throw new Error('Stack abilities not supported');
       }
 
+      return state;
+    }
+
+    case CAST:
+      return action.card.onCast(state);
+
+    case POP_STACK: {
+      const isNotLastelement = (_: unknown, i: number) =>
+        i !== state.stack.length - 1;
+
+      const poppedStackObject = state.stack[state.stack.length - 1];
+      const stackWithoutPoppedObject = state.stack.filter(isNotLastelement);
+      state = { ...state, stack: stackWithoutPoppedObject };
+      state = poppedStackObject.onResolve(state);
       return state;
     }
 
