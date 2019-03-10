@@ -1,5 +1,6 @@
 import { values, pipe, map, all, any } from 'ramda';
 import { isBoolean } from 'util';
+import { Effect } from '../effects';
 
 export type ManaPool = {
   r: number;
@@ -11,7 +12,7 @@ export type ManaPool = {
 };
 
 export namespace ManaPool {
-  export const Empty: ManaPool = {
+  export const NULL: ManaPool = {
     r: 0,
     g: 0,
     b: 0,
@@ -55,10 +56,20 @@ export type Card = {
   name: string;
   id: number;
   abilities: Ability[];
+  effects: Effect[];
   typeInfo: CardTypeInfo;
 };
 
 export namespace Card {
+  export const NULL: Card = {
+    castingCost: {},
+    name: '',
+    id: 0,
+    effects: [],
+    abilities: [],
+    typeInfo: { types: [] }
+  };
+
   export const getColor = (card: Card): (keyof ManaPool)[] => {
     const result = (<[keyof ManaPool, number][]>(
       Object.entries(card.castingCost)
@@ -76,24 +87,20 @@ export type Permanent = Card & {
   isTapped: boolean;
 };
 
-export type ActivationCost = {
-  r: number;
-  g: number;
-  b: number;
-  u: number;
-  w: number;
-  c: number;
+export namespace Permanent {
+  export const NULL: Permanent = {
+    ...Card.NULL,
+    isTapped: false
+  };
+}
+
+export type ActivationCost = ManaPool & {
   tapSelf: boolean;
 };
 
 export namespace ActivationCost {
-  export const Empty: ActivationCost = {
-    w: 0,
-    u: 0,
-    b: 0,
-    r: 0,
-    g: 0,
-    c: 0,
+  export const NULL: ActivationCost = {
+    ...ManaPool.NULL,
     tapSelf: false
   };
 
@@ -143,7 +150,7 @@ export namespace Ability {
     isManaAbility: false,
     usesStack: true,
     effect: () => {},
-    cost: ActivationCost.Empty
+    cost: ActivationCost.NULL
   };
 
   export const getManaAbility = (gain: Partial<ManaPool>): ManaAbility => ({
@@ -151,7 +158,7 @@ export namespace Ability {
     isManaAbility: true,
     usesStack: false,
     effect: () => gain,
-    cost: { ...ActivationCost.Empty, tapSelf: true }
+    cost: { ...ActivationCost.NULL, tapSelf: true }
   });
 
   export const TapForBlackMana = Ability.getManaAbility({ b: 1 });

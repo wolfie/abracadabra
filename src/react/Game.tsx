@@ -13,6 +13,7 @@ import { moveCardsBetweenZones } from '../redux/game-state/actions';
 import ManaPoolAdapter from './components/manapool-adapter/ManaPoolAdapter';
 import HandAdapter from './components/hand-adapter/HandAdapter';
 import BattlefieldAdapter from './components/battlefield-adapter/BattlefieldAdapter';
+import { MANA_EFFECT } from '../redux/effects';
 
 type DispatchProps = { initBoard: () => unknown };
 type StateProps = { board: Permanent[] };
@@ -34,6 +35,7 @@ const Game: React.FunctionComponent<Props> = ({ initBoard, board }) => (
 const swamp: Permanent = {
   castingCost: {},
   abilities: [Ability.TapForBlackMana],
+  effects: [],
   id: 0,
   isTapped: false,
   name: 'Swamp',
@@ -43,6 +45,7 @@ const swamp: Permanent = {
 const darkRitual: Card = {
   castingCost: { b: 1 },
   abilities: [],
+  effects: [{ type: MANA_EFFECT, mana: { b: 3 } }],
   id: 1,
   name: 'Dark Ritual',
   typeInfo: CardTypeInfo.Instant

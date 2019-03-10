@@ -3,22 +3,13 @@ import { tapPermanent } from './actions';
 import { GameState, Permanent } from './types';
 import 'jest';
 
-const CARD: Permanent = {
-  name: '',
-  castingCost: {},
-  isTapped: false,
-  id: 0,
-  abilities: [],
-  typeInfo: { types: [] }
-};
-
-const CARD1: Permanent = { ...CARD, name: 'Card1' };
-const CARD2: Permanent = { ...CARD, name: 'Card2' };
+const PERMANENT1: Permanent = { ...Permanent.NULL, name: 'Card1' };
+const PERMANENT2: Permanent = { ...Permanent.NULL, name: 'Card2' };
 
 const initialGameState = initialState;
 const gameWithOneCard: GameState = {
   ...initialGameState,
-  board: [CARD1]
+  board: [PERMANENT1]
 };
 
 describe('getPermanent', () => {
@@ -34,7 +25,7 @@ describe('getPermanent', () => {
   it('should find a card from the second board', () => {
     const gameWithTwoBoards: GameState = {
       ...initialGameState,
-      board: [CARD1, CARD2]
+      board: [PERMANENT1, PERMANENT2]
     };
     const permanent = getPermanent(gameWithTwoBoards, 1);
     expect(permanent).toBeDefined();

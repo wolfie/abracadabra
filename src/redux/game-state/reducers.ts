@@ -9,16 +9,16 @@ import {
   ManaPool,
   Ability,
   Card
-} from "./types";
-import { sum, values, pipe } from "ramda";
+} from './types';
+import { sum, values, pipe } from 'ramda';
 
 const assert = (fn: (...args: any) => boolean): true => {
-  if (!fn()) throw new Error("Assert error");
+  if (!fn()) throw new Error('Assert error');
   return true;
 };
 
 export const initialState: GameState = {
-  manaPool: ManaPool.Empty,
+  manaPool: ManaPool.NULL,
   board: [],
   graveyard: [],
   hand: [],
@@ -77,7 +77,7 @@ const payManaCost = (
   const depleteRemainingManaPool = convertedManaLeft <= cCostLeft;
   return depleteRemainingManaPool
     ? [
-        ManaPool.Empty,
+        ManaPool.NULL,
         {
           b: bCostLeft,
           r: rCostLeft,
@@ -122,7 +122,7 @@ export const gameStateReducer = (
   state = initialState,
   action: GameStateActions
 ): GameState => {
-  if (action.type.startsWith("@@")) return state;
+  if (action.type.startsWith('@@')) return state;
 
   switch (action.type) {
     case TAP_PERMANENT: {
@@ -136,34 +136,34 @@ export const gameStateReducer = (
       switch (action.from) {
         case null:
           break;
-        case "hand":
+        case 'hand':
           assert(() => state.hand.find(cardMatchesActionCard) !== undefined);
           state = {
             ...state,
             hand: state.hand.filter(cardNotActionCard)
           };
           break;
-        case "battlefield":
+        case 'battlefield':
           assert(() => state.board.find(cardMatchesActionCard) !== undefined);
           state = { ...state, board: state.board.filter(cardNotActionCard) };
         default:
-          throw new Error("unsupported from-zone: " + action.from);
+          throw new Error('unsupported from-zone: ' + action.from);
       }
 
       switch (action.to) {
         case null:
           break;
-        case "hand":
+        case 'hand':
           state = { ...state, hand: [...state.hand, action.card] };
           break;
-        case "battlefield":
+        case 'battlefield':
           state = {
             ...state,
             board: [...state.board, { ...action.card, isTapped: false }]
           };
           break;
         default:
-          throw new Error("unsupported to-zone: " + action.to);
+          throw new Error('unsupported to-zone: ' + action.to);
       }
 
       return state;
@@ -182,7 +182,7 @@ export const gameStateReducer = (
         );
         state = gainPossibleManaReducer(state, activatedAbility);
       } else {
-        throw new Error("Stack abilities not supported");
+        throw new Error('Stack abilities not supported');
       }
 
       return state;
@@ -190,7 +190,7 @@ export const gameStateReducer = (
 
     default:
       throw new Error(
-        "Reducer not returning on action " + JSON.stringify(action)
+        'Reducer not returning on action ' + JSON.stringify(action)
       );
   }
 };
