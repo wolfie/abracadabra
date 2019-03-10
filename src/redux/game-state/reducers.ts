@@ -33,6 +33,7 @@ export const getPermanent = (state: GameState, id: number): Permanent => {
   throw new Error(`could not find permanent with id ${id}`);
 };
 
+// @ts-ignore
 const payManaCost = (
   manaPool: ManaPool,
   cost: ActivationCost
