@@ -1,10 +1,10 @@
 version: 0.0.{build}
-stack: node 11.10
+stack: node 11.11
 skip_tags: true
 image: Ubuntu1804
 build_script:
-- sh: >-
-    yarn
+  - sh: >-
+      yarn
 test_script:
-- sh: >-
-    yarn test
+  - sh: >-
+      yarn test
