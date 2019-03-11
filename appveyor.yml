@@ -1,0 +1,10 @@
+version: 0.0.{build}
+stack: node 11.10
+skip_tags: true
+image: Ubuntu1804
+build_script:
+- sh: >-
+    yarn
+test_script:
+- sh: >-
+    yarn test
