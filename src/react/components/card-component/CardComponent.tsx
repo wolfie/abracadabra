@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as styles from './CardComponent.scss';
 import * as classnames from 'classnames/bind';
-import { ManaPool, CardTypeInfo } from '../../../redux/game-state/types';
+import { CardTypeInfo, ManaPool } from '../../../redux/game-state/types';
 
 const css = classnames.bind(styles);
 
@@ -11,7 +11,7 @@ export interface Props {
   isClickable?: boolean;
   onClick?: (...args: any) => any;
   highlight?: boolean;
-  color: (keyof ManaPool)[];
+  color: Array<keyof ManaPool>;
   typeInfo: CardTypeInfo;
 }
 

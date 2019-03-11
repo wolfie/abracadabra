@@ -3,7 +3,7 @@ import { Card, GameStateActions } from '../../../redux/game-state/types';
 import CardComponent from '../card-component/CardComponent';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { cast } from '../../../redux/game-state/actions';
+import { castAction } from '../../../redux/game-state/actions';
 
 type DispatchProps = { cast: (card: Card) => any };
 type OwnProps = { card: Card };
@@ -22,7 +22,7 @@ const HandCardAdapter: React.FunctionComponent<Props> = ({ card, cast }) => (
 const mapDispatchToProps = (
   dispatch: Dispatch<GameStateActions>
 ): DispatchProps => ({
-  cast: (card: Card) => () => dispatch(cast(card))
+  cast: (card: Card) => () => dispatch(castAction(card))
 });
 
 export default connect(

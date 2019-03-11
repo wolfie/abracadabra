@@ -1,14 +1,14 @@
-import { values, pipe, map, all, any } from 'ramda';
+import { all, any, map, pipe, values } from 'ramda';
 import { isBoolean } from 'util';
 
-export type ManaPool = {
+export interface ManaPool {
   r: number;
   g: number;
   b: number;
   u: number;
   w: number;
   c: number;
-};
+}
 
 export namespace ManaPool {
   export const NULL: ManaPool = {
@@ -35,10 +35,10 @@ export namespace ManaPool {
 
 export type CardSuperType = 'basic';
 export type CardType = 'instant' | 'land' | 'swamp';
-export type CardTypeInfo = {
+export interface CardTypeInfo {
   superType?: CardSuperType;
   types: CardType[];
-};
+}
 
 export namespace CardTypeInfo {
   const BasicLand = (landType: CardType): CardTypeInfo => ({
@@ -56,7 +56,7 @@ export namespace CardLifetimeEventHandler {
   export const NULL: CardLifetimeEventHandler = state => state;
 }
 
-export type Card = {
+export interface Card {
   castingCost: Partial<ManaPool>;
   name: string;
   id: number;
@@ -64,7 +64,7 @@ export type Card = {
   onCast: CardLifetimeEventHandler;
   onResolve: CardLifetimeEventHandler;
   typeInfo: CardTypeInfo;
-};
+}
 
 export namespace Card {
   export const NULL: Card = {
@@ -77,13 +77,13 @@ export namespace Card {
     onResolve: state => state
   };
 
-  export const getColor = (card: Card): (keyof ManaPool)[] => {
-    const result = (<[keyof ManaPool, number][]>(
-      Object.entries(card.castingCost)
-    )).reduce(
+  export const getColor = (card: Card): Array<keyof ManaPool> => {
+    const result = (Object.entries(card.castingCost) as Array<
+      [keyof ManaPool, number]
+    >).reduce(
       (acc, [color, costAmount]) =>
         color !== 'c' && costAmount > 0 ? [...acc, color] : acc,
-      [] as (keyof ManaPool)[]
+      [] as Array<keyof ManaPool>
     );
 
     return result.length > 0 ? result : ['c'];

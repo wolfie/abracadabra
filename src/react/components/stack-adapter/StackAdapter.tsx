@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import {
-  GameState,
   Card,
+  GameState,
   GameStateActions
 } from '../../../redux/game-state/types';
 import CardComponent from '../card-component/CardComponent';
 import CardstackComponent from '../card-stack-component/CardstackComponent';
 import { Dispatch } from 'redux';
-import { popStack } from '../../../redux/game-state/actions';
+import { popStackAction } from '../../../redux/game-state/actions';
 
 type StateProps = { stack: Card[] };
 type DispatchProps = { popStack: () => unknown };
@@ -41,7 +41,7 @@ const mapStateToProps = (state: GameState): StateProps => ({
 const mapDispatchToProps = (
   dispatch: Dispatch<GameStateActions>
 ): DispatchProps => ({
-  popStack: () => dispatch(popStack())
+  popStack: () => dispatch(popStackAction())
 });
 
 export default connect(

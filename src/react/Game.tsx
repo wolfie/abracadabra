@@ -2,13 +2,13 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import {
+  GameState,
   GameStateActions,
-  Permanent,
-  GameState
+  Permanent
 } from '../redux/game-state/types';
-import ManaPoolAdapter from './components/manapool-adapter/ManaPoolAdapter';
-import HandAdapter from './components/hand-adapter/HandAdapter';
 import BattlefieldAdapter from './components/battlefield-adapter/BattlefieldAdapter';
+import HandAdapter from './components/hand-adapter/HandAdapter';
+import ManaPoolAdapter from './components/manapool-adapter/ManaPoolAdapter';
 import StackAdapter from './components/stack-adapter/StackAdapter';
 
 type DispatchProps = { initBoard: () => unknown };

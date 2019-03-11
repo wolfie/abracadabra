@@ -1,14 +1,14 @@
 import * as React from 'react';
 import CardComponent from '../card-component/CardComponent';
 import {
-  Permanent,
-  GameStateActions,
   Ability,
-  Card
+  Card,
+  GameStateActions,
+  Permanent
 } from '../../../redux/game-state/types';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { activateAbility } from '../../../redux/game-state/actions';
+import { activateAbilityAction } from '../../../redux/game-state/actions';
 
 type DispatchProps = {
   activateAbility: (permanentId: number, abilityId: number) => unknown;
@@ -52,7 +52,7 @@ const mapDispatchToProps = (
   dispatch: Dispatch<GameStateActions>
 ): DispatchProps => ({
   activateAbility: (permanentId, abilityId) =>
-    dispatch(activateAbility(permanentId, abilityId))
+    dispatch(activateAbilityAction(permanentId, abilityId))
 });
 
 export default connect(

@@ -1,0 +1,29 @@
+{
+  "extends": ["tslint:latest", "tslint-react", "tslint-config-prettier"],
+  "rules": {
+    "no-namespace": false,
+    "object-literal-sort-keys": false,
+    "interface-name": false,
+    "no-empty": false,
+    "curly": [true, "ignore-same-line"],
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-pascal-case",
+      "allow-snake-case",
+      "allow-leading-underscore",
+      "allow-trailing-underscore"
+    ],
+    "no-duplicate-imports": false,
+    "interface-over-type-literal": false,
+    "no-submodule-imports": [true, "classnames/bind"],
+    "ordered-imports": [
+      true,
+      {
+        "import-sources-order": "any",
+        "named-imports-order": "lowercase-first"
+      }
+    ]
+  }
+}

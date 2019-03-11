@@ -5,7 +5,14 @@
   "license": "MIT",
   "scripts": {
     "start": "npx webpack-dev-server --hot",
-    "test": "npx jest"
+    "test": "yarn test:jest && yarn lint",
+    "test:jest": "npx jest",
+    "lint": "yarn lint:prettier && yarn lint:tslint",
+    "lint:fix": "yarn lint:prettier:fix && yarn lint:tslint:fix",
+    "lint:prettier": "npx prettier --check \"src/**/*.{ts,tsx}\"",
+    "lint:prettier:fix": "yarn lint:prettier --write",
+    "lint:tslint": "npx tslint --project tsconfig.json",
+    "lint:tslint:fix": "yarn lint:tslint --fix"
   },
   "dependencies": {
     "@types/classnames": "^2.2.7",
@@ -37,5 +44,10 @@
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1",
     "webpack-dev-server": "^3.1.14"
+  },
+  "devDependencies": {
+    "tslint": "^5.13.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-react": "^3.6.0"
   }
 }

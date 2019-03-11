@@ -1,19 +1,21 @@
 import {
+  Ability,
+  ActivationCost,
+  Card,
   GameState,
   GameStateActions,
-  TAP_PERMANENT,
-  ACTIVATE_ABILITY,
-  MOVE_CARD_BETWEEN_ZONES,
-  Permanent,
-  ActivationCost,
   ManaPool,
-  Ability,
-  Card,
-  Zone,
-  CAST,
-  POP_STACK
+  Permanent,
+  Zone
 } from './types';
-import { sum, values, pipe } from 'ramda';
+import {
+  ACTIVATE_ABILITY,
+  CAST,
+  MOVE_CARD_BETWEEN_ZONES,
+  POP_STACK,
+  TAP_PERMANENT
+} from './types';
+import { pipe, sum, values } from 'ramda';
 
 const assert = (fn: (...args: any) => boolean): true => {
   if (!fn()) throw new Error('Assert error');
@@ -185,8 +187,7 @@ export const gameStateReducer = (
       );
 
     case ACTIVATE_ABILITY: {
-      let activatedPermanent = getPermanent(state, action.permanentId);
-
+      const activatedPermanent = getPermanent(state, action.permanentId);
       const activatedAbility = activatedPermanent.abilities[action.abilityId];
 
       if (!activatedAbility.usesStack) {

@@ -3,8 +3,13 @@ import {
   getPermanent,
   moveCardBetweenZonesReducer
 } from './reducers';
-import { tapPermanent, cast, popStack, moveCardsBetweenZones } from './actions';
-import { GameState, Permanent, Card } from './types';
+import {
+  castAction,
+  moveCardsBetweenZonesAction,
+  popStackAction,
+  tapPermanentAction
+} from './actions';
+import { Card, GameState, Permanent } from './types';
 import 'jest';
 
 const PERMANENT_ID = 0;
@@ -34,7 +39,7 @@ describe('moveCardBetweenZonesReducer', () => {
   const card = { ...Card.NULL, id: PERMANENT_ID };
   const permanent = { ...card, isTapped: false };
   const cardIsFoundIn = (cardToFind: Card, cardArray: Card[]): boolean =>
-    cardArray.find(card => cardToFind.id === card.id) !== undefined;
+    cardArray.find(card_ => cardToFind.id === card_.id) !== undefined;
 
   it('should remove from hand', () => {
     const startState = { ...GameState.NULL, hand: [card] };
@@ -130,7 +135,7 @@ describe('moveCardBetweenZonesReducer', () => {
 describe('gameStateReducer', () => {
   describe('tapAction', () => {
     it('should tap a car by id', () => {
-      const action = tapPermanent(0);
+      const action = tapPermanentAction(0);
 
       expect(gameWithOneCard.board[0].isTapped).toBeFalsy();
       const tappedGameState = gameStateReducer(gameWithOneCard, action);
@@ -145,7 +150,7 @@ describe('gameStateReducer', () => {
       const onCast = jest.fn();
       const card = { ...Card.NULL, onCast };
 
-      const action = cast(card);
+      const action = castAction(card);
       gameStateReducer(GameState.NULL, action);
       expect(onCast).toHaveBeenCalled();
     });
@@ -153,7 +158,7 @@ describe('gameStateReducer', () => {
 
   describe('popStackAction', () => {
     it('should throw if the stack is empty', () => {
-      const action = popStack();
+      const action = popStackAction();
       expect(() => gameStateReducer(GameState.NULL, action)).toThrow();
     });
 
@@ -162,10 +167,10 @@ describe('gameStateReducer', () => {
       const card = { ...Card.NULL, onResolve };
       const stateWithCardOnStack = gameStateReducer(
         GameState.NULL,
-        moveCardsBetweenZones(card, null, 'stack')
+        moveCardsBetweenZonesAction(card, null, 'stack')
       );
 
-      const action = popStack();
+      const action = popStackAction();
       gameStateReducer(stateWithCardOnStack, action);
       expect(onResolve).toHaveBeenCalled();
     });

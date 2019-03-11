@@ -1,20 +1,20 @@
 import {
   ACTIVATE_ABILITY,
+  Card,
   CAST,
+  GameStateActions,
   MOVE_CARD_BETWEEN_ZONES,
   POP_STACK,
   TAP_PERMANENT,
-  GameStateActions,
-  Card,
   Zone
 } from './types';
 
-export const tapPermanent = (id: number): GameStateActions => ({
+export const tapPermanentAction = (id: number): GameStateActions => ({
   type: TAP_PERMANENT,
   id
 });
 
-export const activateAbility = (
+export const activateAbilityAction = (
   permanentId: number,
   abilityId: number
 ): GameStateActions => ({
@@ -23,7 +23,7 @@ export const activateAbility = (
   abilityId
 });
 
-export const moveCardsBetweenZones = (
+export const moveCardsBetweenZonesAction = (
   card: Card,
   from: Zone,
   to: Zone
@@ -34,11 +34,11 @@ export const moveCardsBetweenZones = (
   to
 });
 
-export const cast = (card: Card): GameStateActions => ({
+export const castAction = (card: Card): GameStateActions => ({
   type: CAST,
   card
 });
 
-export const popStack = (): GameStateActions => ({
+export const popStackAction = (): GameStateActions => ({
   type: POP_STACK
 });

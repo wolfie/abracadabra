@@ -4,13 +4,11 @@ import * as styles from './CardstackComponent.scss';
 
 const css = classnames.bind(styles);
 
-export interface CardStackProps {}
-
 const getStyle: any = (props: any) => ({
   '--cards': React.Children.count(props.children)
 });
 
-const CardstackComponent: React.FunctionComponent<CardStackProps> = props => (
+const CardstackComponent: React.FunctionComponent = props => (
   <div style={getStyle(props)} className={css('cardstackcomponent')}>
     {React.Children.map(props.children, (child, i) => {
       const childStyle: any = { '--index': i };

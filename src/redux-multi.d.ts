@@ -1,1 +1,1 @@
-declare module "redux-multi";
+declare module 'redux-multi';

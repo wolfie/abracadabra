@@ -1,21 +1,21 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import Game from './Game';
-import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import { applyMiddleware, createStore } from 'redux';
+import reduxMulti from 'redux-multi';
+import { moveCardsBetweenZonesAction } from '../redux/game-state/actions';
 import {
   gameStateReducer,
   moveCardBetweenZonesReducer
 } from '../redux/game-state/reducers';
-import { Provider } from 'react-redux';
-import reduxMulti from 'redux-multi';
 import {
-  CardTypeInfo,
-  ManaPool,
+  Ability,
   Card,
   CardLifetimeEventHandler,
-  Ability
+  CardTypeInfo,
+  ManaPool
 } from '../redux/game-state/types';
-import { moveCardsBetweenZones } from '../redux/game-state/actions';
+import Game from './Game';
 
 const anyWindow = window as any;
 
@@ -67,9 +67,9 @@ const pyreticRitual: Card = {
 };
 
 store.dispatch([
-  moveCardsBetweenZones(swamp, null, 'hand'),
-  moveCardsBetweenZones(darkRitual, null, 'hand'),
-  moveCardsBetweenZones(pyreticRitual, null, 'hand')
+  moveCardsBetweenZonesAction(swamp, null, 'hand'),
+  moveCardsBetweenZonesAction(darkRitual, null, 'hand'),
+  moveCardsBetweenZonesAction(pyreticRitual, null, 'hand')
 ]);
 
 ReactDOM.render(
