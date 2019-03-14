@@ -24,6 +24,7 @@
         "import-sources-order": "any",
         "named-imports-order": "lowercase-first"
       }
-    ]
+    ],
+    "no-implicit-dependencies": [true, "dev"]
   }
 }
