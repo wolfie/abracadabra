@@ -1,5 +1,6 @@
-import { all, any, map, pipe, values } from 'ramda';
+import { all, any, equals, map, pipe, sum, values } from 'ramda';
 import { isBoolean } from 'util';
+import { assert } from '../util';
 
 export interface ManaPool {
   r: number;
@@ -21,16 +22,23 @@ export namespace ManaPool {
   };
 
   export const Add = (
-    manaPool: ManaPool,
+    manaPool: Partial<ManaPool>,
     addition: Partial<ManaPool>
   ): ManaPool => ({
-    r: manaPool.r + (addition.r || 0),
-    g: manaPool.g + (addition.g || 0),
-    b: manaPool.b + (addition.b || 0),
-    u: manaPool.u + (addition.u || 0),
-    w: manaPool.w + (addition.w || 0),
-    c: manaPool.c + (addition.c || 0)
+    r: (manaPool.r || 0) + (addition.r || 0),
+    g: (manaPool.g || 0) + (addition.g || 0),
+    b: (manaPool.b || 0) + (addition.b || 0),
+    u: (manaPool.u || 0) + (addition.u || 0),
+    w: (manaPool.w || 0) + (addition.w || 0),
+    c: (manaPool.c || 0) + (addition.c || 0)
   });
+
+  export const IsEmpty = (partialManaPool: Partial<ManaPool>) =>
+    pipe(
+      values,
+      sum,
+      equals(0)
+    )(partialManaPool);
 }
 
 export type CardSuperType = 'basic';
@@ -61,9 +69,9 @@ export interface Card {
   name: string;
   id: number;
   abilities: Ability[];
-  onCast: CardLifetimeEventHandler;
   onResolve: CardLifetimeEventHandler;
   typeInfo: CardTypeInfo;
+  canProvideManaNow: (state: GameState) => boolean;
 }
 
 export namespace Card {
@@ -73,8 +81,8 @@ export namespace Card {
     id: 0,
     abilities: [],
     typeInfo: { types: [] },
-    onCast: state => state,
-    onResolve: state => state
+    onResolve: state => state,
+    canProvideManaNow: () => false
   };
 
   export const getColor = (card: Card): Array<keyof ManaPool> => {
@@ -88,6 +96,12 @@ export namespace Card {
 
     return result.length > 0 ? result : ['c'];
   };
+
+  export const isLand = (card: Card): boolean =>
+    card.typeInfo.types.indexOf('land') >= 0;
+
+  export const isInstant = (card: Card): boolean =>
+    card.typeInfo.types.indexOf('instant') >= 0;
 }
 
 export type Permanent = Card & {
@@ -99,6 +113,9 @@ export namespace Permanent {
     ...Card.NULL,
     isTapped: false
   };
+
+  export const matches = (card: Card): card is Permanent =>
+    (card as any).isTapped !== undefined;
 }
 
 export type ActivationCost = ManaPool & {
@@ -146,6 +163,8 @@ export interface Ability {
   effect: () => unknown;
 
   cost: ActivationCost;
+
+  canBeActivated: (card: Card, state: GameState) => boolean;
 }
 
 export namespace Ability {
@@ -157,7 +176,8 @@ export namespace Ability {
     isManaAbility: false,
     usesStack: true,
     effect: () => {},
-    cost: ActivationCost.NULL
+    cost: ActivationCost.NULL,
+    canBeActivated: () => false
   };
 
   export const getManaAbility = (gain: Partial<ManaPool>): ManaAbility => ({
@@ -165,7 +185,8 @@ export namespace Ability {
     isManaAbility: true,
     usesStack: false,
     effect: () => gain,
-    cost: { ...ActivationCost.NULL, tapSelf: true }
+    cost: { ...ActivationCost.NULL, tapSelf: true },
+    canBeActivated: card => (Permanent.matches(card) ? !card.isTapped : true)
   });
 
   export const TapForBlackMana = Ability.getManaAbility({ b: 1 });
@@ -182,6 +203,36 @@ export namespace Ability {
 
 export type Zone = 'hand' | 'battlefield' | 'stack' | null;
 
+export namespace Zone {
+  export const toCardArray = (zone: Zone, state: GameState): Card[] => {
+    switch (zone) {
+      case 'battlefield':
+        return state.board;
+      case 'hand':
+        return state.hand;
+      case 'stack':
+        return state.stack;
+      default:
+        throw new Error('unhandled zone: ' + zone);
+    }
+  };
+
+  const cardIsInArray = (cards: Card[], card: Card) =>
+    cards.find(card_ => card_.id === card.id) !== undefined;
+
+  export const cardIsIn = (zone: Zone, card: Card, state: GameState): boolean =>
+    cardIsInArray(toCardArray(zone, state), card);
+
+  export const find = (card: Card, state: GameState): Zone => {
+    const foundZone = (['hand', 'battlefield', 'stack'] as Zone[])
+      .map((zone: Zone) => (cardIsIn(zone, card, state) ? zone : null))
+      .filter(zone => zone !== null);
+
+    assert(() => foundZone.length === 1);
+    return foundZone[0];
+  };
+}
+
 export interface GameState {
   manaPool: ManaPool;
   health: number;
@@ -191,6 +242,8 @@ export interface GameState {
   stack: Card[];
   graveyard: Card[];
   nextCardId: number;
+  owedMana: Partial<ManaPool>;
+  activatableCardIds: number[];
 }
 
 export namespace GameState {
@@ -202,7 +255,9 @@ export namespace GameState {
     deck: [],
     stack: [],
     health: 20,
-    nextCardId: 0
+    nextCardId: 0,
+    owedMana: {},
+    activatableCardIds: []
   };
 }
 

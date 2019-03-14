@@ -15,12 +15,8 @@ import {
   POP_STACK,
   TAP_PERMANENT
 } from './types';
-import { pipe, sum, values } from 'ramda';
-
-const assert = (fn: (...args: any) => boolean): true => {
-  if (!fn()) throw new Error('Assert error');
-  return true;
-};
+import { map, pipe, sum, uniq, values } from 'ramda';
+import { assert } from '../util';
 
 export const getPermanent = (state: GameState, id: number): Permanent => {
   const card = state.board.find(permanentMaybe => !!permanentMaybe);
@@ -120,6 +116,7 @@ export const moveCardBetweenZonesReducer = (
   from: Zone,
   to: Zone
 ): GameState => {
+  assert(() => from !== to);
   const thisCard = (card_: Card) => card_.id === card.id;
   const notThisCard = (card_: Card) => card_.id !== card.id;
 
@@ -167,7 +164,48 @@ export const moveCardBetweenZonesReducer = (
   return state;
 };
 
-export const gameStateReducer = (
+const cardToId = (card: Card) => card.id;
+
+const findInstantsIn = (zone: Zone, state: GameState) =>
+  Zone.toCardArray(zone, state).filter(Card.isInstant);
+
+const findManaSourcesIn = (zone: Zone, state: GameState) =>
+  Zone.toCardArray(zone, state).filter(card => card.canProvideManaNow(state));
+
+const ifStackIsPopulatedAndNothingIsOwed = (state: GameState): Card[] =>
+  state.stack.length > 0 && ManaPool.IsEmpty(state.owedMana)
+    ? [
+        ...findInstantsIn('hand', state),
+        ...findManaSourcesIn('battlefield', state)
+      ]
+    : [];
+
+const ifStackIsEmpty = (state: GameState): Card[] =>
+  state.stack.length === 0 ? [...Zone.toCardArray('hand', state)] : [];
+
+const ifManaOwed = (state: GameState): Card[] =>
+  !ManaPool.IsEmpty(state.owedMana)
+    ? findManaSourcesIn('battlefield', state)
+    : [];
+
+const findActivatables = (state: GameState): Card[] => [
+  ...ifManaOwed(state),
+  ...ifStackIsEmpty(state),
+  ...ifStackIsPopulatedAndNothingIsOwed(state)
+];
+
+const findActivatableCardIdsDuringState = pipe(
+  findActivatables,
+  map(cardToId),
+  uniq
+);
+
+const updateActivatableCardIdsReducer = (state: GameState) => ({
+  ...state,
+  activatableCardIds: findActivatableCardIdsDuringState(state)
+});
+
+const gameStateReducer_ = (
   state = GameState.NULL,
   action: GameStateActions
 ): GameState => {
@@ -204,8 +242,35 @@ export const gameStateReducer = (
       return state;
     }
 
-    case CAST:
-      return action.card.onCast(state);
+    case CAST: {
+      // Casting spells: https://www.yawgatog.com/resources/magic-rules/#R601
+
+      const card = action.card;
+      const originZone = Zone.find(card, state);
+      if (Card.isLand(card)) {
+        // Special action, playing a land: https://www.yawgatog.com/resources/magic-rules/#R1152a
+
+        return moveCardBetweenZonesReducer(
+          state,
+          card,
+          originZone,
+          'battlefield'
+        );
+      } else {
+        // Put card on stack https://www.yawgatog.com/resources/magic-rules/#R6012a
+        state = moveCardBetweenZonesReducer(state, card, originZone, 'stack');
+
+        // TODO: 601.2b-e
+
+        // Require casting cost https://www.yawgatog.com/resources/magic-rules/#R6012f
+        state = {
+          ...state,
+          owedMana: ManaPool.Add(state.owedMana, card.castingCost)
+        };
+
+        return state;
+      }
+    }
 
     case POP_STACK: {
       const isNotLastelement = (_: unknown, i: number) =>
@@ -224,3 +289,9 @@ export const gameStateReducer = (
       );
   }
 };
+
+export const gameStateReducer = (
+  state = GameState.NULL,
+  action: GameStateActions
+): GameState =>
+  updateActivatableCardIdsReducer(gameStateReducer_(state, action));

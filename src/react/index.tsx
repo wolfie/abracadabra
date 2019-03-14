@@ -4,16 +4,16 @@ import { Provider } from 'react-redux';
 import { applyMiddleware, createStore } from 'redux';
 import reduxMulti from 'redux-multi';
 import { moveCardsBetweenZonesAction } from '../redux/game-state/actions';
-import {
-  gameStateReducer,
-  moveCardBetweenZonesReducer
-} from '../redux/game-state/reducers';
+import { gameStateReducer } from '../redux/game-state/reducers';
 import {
   Ability,
   Card,
   CardLifetimeEventHandler,
   CardTypeInfo,
-  ManaPool
+  ManaPool,
+  GameState,
+  Zone,
+  Permanent
 } from '../redux/game-state/types';
 import Game from './Game';
 
@@ -32,38 +32,37 @@ const swamp: Card = {
   id: 0,
   name: 'Swamp',
   typeInfo: CardTypeInfo.Swamp,
-  onCast: state =>
-    // todo: allow only one land per turn
-    moveCardBetweenZonesReducer(state, swamp, 'hand', 'battlefield'),
-  onResolve: CardLifetimeEventHandler.NULL
+  onResolve: CardLifetimeEventHandler.NULL,
+  canProvideManaNow: (state: GameState) =>
+    Zone.cardIsIn('battlefield', swamp, state) &&
+    Permanent.matches(swamp) &&
+    swamp.isTapped
 };
 
 const darkRitual: Card = {
   castingCost: { b: 1 },
   abilities: [],
-  onCast: state =>
-    moveCardBetweenZonesReducer(state, darkRitual, 'hand', 'stack'),
   onResolve: state => ({
     ...state,
     manaPool: ManaPool.Add(state.manaPool, { b: 3 })
   }),
   id: 1,
   name: 'Dark Ritual',
-  typeInfo: CardTypeInfo.Instant
+  typeInfo: CardTypeInfo.Instant,
+  canProvideManaNow: () => false
 };
 
 const pyreticRitual: Card = {
   castingCost: { r: 1, c: 1 },
   abilities: [],
-  onCast: state =>
-    moveCardBetweenZonesReducer(state, pyreticRitual, 'hand', 'stack'),
   onResolve: state => ({
     ...state,
     manaPool: ManaPool.Add(state.manaPool, { r: 3 })
   }),
   id: 2,
   name: 'Pyretic Ritual',
-  typeInfo: CardTypeInfo.Instant
+  typeInfo: CardTypeInfo.Instant,
+  canProvideManaNow: () => false
 };
 
 store.dispatch([
