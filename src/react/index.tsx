@@ -10,10 +10,10 @@ import {
   Card,
   CardLifetimeEventHandler,
   CardTypeInfo,
-  ManaPool,
   GameState,
-  Zone,
-  Permanent
+  ManaPool,
+  Permanent,
+  Zone
 } from '../redux/game-state/types';
 import Game from './Game';
 
@@ -37,6 +37,19 @@ const swamp: Card = {
     Zone.cardIsIn('battlefield', swamp, state) &&
     Permanent.matches(swamp) &&
     swamp.isTapped
+};
+
+const mountain: Card = {
+  castingCost: {},
+  abilities: [Ability.TapForRedMana],
+  id: 3,
+  name: 'Mountain',
+  typeInfo: CardTypeInfo.Mountain,
+  onResolve: CardLifetimeEventHandler.NULL,
+  canProvideManaNow: (state: GameState) =>
+    Zone.cardIsIn('battlefield', mountain, state) &&
+    Permanent.matches(mountain) &&
+    mountain.isTapped
 };
 
 const darkRitual: Card = {
@@ -67,6 +80,7 @@ const pyreticRitual: Card = {
 
 store.dispatch([
   moveCardsBetweenZonesAction(swamp, null, 'hand'),
+  moveCardsBetweenZonesAction(mountain, null, 'hand'),
   moveCardsBetweenZonesAction(darkRitual, null, 'hand'),
   moveCardsBetweenZonesAction(pyreticRitual, null, 'hand')
 ]);

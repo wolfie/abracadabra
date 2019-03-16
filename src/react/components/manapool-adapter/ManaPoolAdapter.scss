@@ -3,6 +3,10 @@ $margin: 0.5em;
 .manapool {
   background-color: #eeeeee;
 
+  &.highlighted {
+    border: 1px solid black;
+  }
+
   .color {
     display: inline-block;
     border: 1px solid black;
@@ -11,9 +15,15 @@ $margin: 0.5em;
     border-collapse: collapse;
     padding: 0.2em;
     border-radius: 4px;
+    cursor: default;
 
     &:first-of-type {
       margin-left: $margin;
+    }
+
+    &.clickable {
+      cursor: pointer;
+      border-color: red;
     }
   }
 }
