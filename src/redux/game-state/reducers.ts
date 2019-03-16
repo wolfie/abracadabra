@@ -13,13 +13,14 @@ import {
   CAST,
   MOVE_CARD_BETWEEN_ZONES,
   POP_STACK,
+  REQUEST_PAY_SINGLE_MANA_COST,
   TAP_PERMANENT
 } from './types';
-import { map, pipe, sum, uniq, values } from 'ramda';
+import { map, mapObjIndexed, pipe, sum, uniq, values } from 'ramda';
 import { assert } from '../util';
 
 export const getPermanent = (state: GameState, id: number): Permanent => {
-  const card = state.board.find(permanentMaybe => !!permanentMaybe);
+  const card = state.board.find(permanentOnBoard => permanentOnBoard.id === id);
   if (card) return card;
   throw new Error(`could not find permanent with id ${id}`);
 };
@@ -172,7 +173,7 @@ const findInstantsIn = (zone: Zone, state: GameState) =>
 const findManaSourcesIn = (zone: Zone, state: GameState) =>
   Zone.toCardArray(zone, state).filter(card => card.canProvideManaNow(state));
 
-const ifStackIsPopulatedAndNothingIsOwed = (state: GameState): Card[] =>
+const whenStackIsPopulatedAndNothingIsOwed = (state: GameState): Card[] =>
   state.stack.length > 0 && ManaPool.IsEmpty(state.owedMana)
     ? [
         ...findInstantsIn('hand', state),
@@ -180,18 +181,18 @@ const ifStackIsPopulatedAndNothingIsOwed = (state: GameState): Card[] =>
       ]
     : [];
 
-const ifStackIsEmpty = (state: GameState): Card[] =>
+const whenStackIsEmpty = (state: GameState): Card[] =>
   state.stack.length === 0 ? [...Zone.toCardArray('hand', state)] : [];
 
-const ifManaOwed = (state: GameState): Card[] =>
+const whenManaOwed = (state: GameState): Card[] =>
   !ManaPool.IsEmpty(state.owedMana)
     ? findManaSourcesIn('battlefield', state)
     : [];
 
 const findActivatables = (state: GameState): Card[] => [
-  ...ifManaOwed(state),
-  ...ifStackIsEmpty(state),
-  ...ifStackIsPopulatedAndNothingIsOwed(state)
+  ...whenManaOwed(state),
+  ...whenStackIsEmpty(state),
+  ...whenStackIsPopulatedAndNothingIsOwed(state)
 ];
 
 const findActivatableCardIdsDuringState = pipe(
@@ -204,6 +205,11 @@ const updateActivatableCardIdsReducer = (state: GameState) => ({
   ...state,
   activatableCardIds: findActivatableCardIdsDuringState(state)
 });
+
+const reduceColorByOne = (color: keyof ManaPool) => (
+  num: number,
+  key: string
+) => (key === color ? num - 1 : num);
 
 const gameStateReducer_ = (
   state = GameState.NULL,
@@ -281,6 +287,31 @@ const gameStateReducer_ = (
       state = { ...state, stack: stackWithoutPoppedObject };
       state = poppedStackObject.onResolve(state);
       return state;
+    }
+
+    case REQUEST_PAY_SINGLE_MANA_COST: {
+      const color = action.mana;
+      const currentOwedOfColor = state.owedMana[color] || 0;
+      const exactlyThisColorIsNeeded =
+        currentOwedOfColor > 0 && state.manaPool[color] > 0;
+      const useThisColorForGenericMana =
+        !exactlyThisColorIsNeeded && (state.owedMana.c || 0) > 0;
+      const isValidManaPayment =
+        exactlyThisColorIsNeeded || useThisColorForGenericMana;
+
+      if (isValidManaPayment) {
+        return {
+          ...state,
+          manaPool: mapObjIndexed(
+            reduceColorByOne(color),
+            state.manaPool
+          ) as ManaPool,
+          owedMana: mapObjIndexed(
+            reduceColorByOne(exactlyThisColorIsNeeded ? color : 'c'),
+            state.owedMana
+          )
+        };
+      } else return state;
     }
 
     default:

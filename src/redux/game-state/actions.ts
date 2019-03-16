@@ -1,12 +1,12 @@
+import { Card, GameStateActions, Zone } from './types';
 import {
   ACTIVATE_ABILITY,
-  Card,
   CAST,
-  GameStateActions,
+  ManaPool,
   MOVE_CARD_BETWEEN_ZONES,
   POP_STACK,
-  TAP_PERMANENT,
-  Zone
+  REQUEST_PAY_SINGLE_MANA_COST,
+  TAP_PERMANENT
 } from './types';
 
 export const tapPermanentAction = (id: number): GameStateActions => ({
@@ -41,4 +41,11 @@ export const castAction = (card: Card): GameStateActions => ({
 
 export const popStackAction = (): GameStateActions => ({
   type: POP_STACK
+});
+
+export const requestPaySingleManaCostAction = (
+  mana: keyof ManaPool
+): GameStateActions => ({
+  type: REQUEST_PAY_SINGLE_MANA_COST,
+  mana
 });

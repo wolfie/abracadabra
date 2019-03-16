@@ -42,7 +42,7 @@ export namespace ManaPool {
 }
 
 export type CardSuperType = 'basic';
-export type CardType = 'instant' | 'land' | 'swamp';
+export type CardType = 'instant' | 'land' | 'swamp' | 'mountain';
 export interface CardTypeInfo {
   superType?: CardSuperType;
   types: CardType[];
@@ -55,6 +55,7 @@ export namespace CardTypeInfo {
   });
 
   export const Swamp: CardTypeInfo = BasicLand('swamp');
+  export const Mountain: CardTypeInfo = BasicLand('mountain');
   export const Instant: CardTypeInfo = { types: ['instant'] };
 }
 
@@ -190,6 +191,7 @@ export namespace Ability {
   });
 
   export const TapForBlackMana = Ability.getManaAbility({ b: 1 });
+  export const TapForRedMana = Ability.getManaAbility({ r: 1 });
 
   const isLegalAbilityFor = (permanent: Permanent) => (ability: Ability) =>
     !ability.cost.tapSelf || !permanent.isTapped;
@@ -293,9 +295,16 @@ interface PopStackAction {
   type: typeof POP_STACK;
 }
 
+export const REQUEST_PAY_SINGLE_MANA_COST = 'REQUEST_PAY_SINGLE_MANA_COST';
+interface RequestPaySingleManaCostAction {
+  type: typeof REQUEST_PAY_SINGLE_MANA_COST;
+  mana: keyof ManaPool;
+}
+
 export type GameStateActions =
   | TapAction
   | ActivateAbilityAction
   | MoveCardBetweenZonesAction
   | CastAction
-  | PopStackAction;
+  | PopStackAction
+  | RequestPaySingleManaCostAction;
