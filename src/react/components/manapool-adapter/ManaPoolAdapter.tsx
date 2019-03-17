@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import {
+  AnAmountOfMana,
   GameState,
   GameStateActions,
   ManaPool
@@ -13,7 +14,7 @@ const css = classnames.bind(styles);
 
 type StateProps = {
   manaPool: ManaPool;
-  owed: Partial<ManaPool>;
+  owed: AnAmountOfMana;
 };
 
 type DispatchProps = {
