@@ -1,4 +1,4 @@
-import { moveCardsBetweenZonesAction } from '../redux/game-state/actions';
+import { moveCardBetweenZonesAction } from '../redux/game-state/actions';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { applyMiddleware, createStore } from 'redux';
@@ -20,10 +20,10 @@ const store = createStoreWithMiddleware(
 );
 
 store.dispatch([
-  moveCardsBetweenZonesAction(M20.swamp, null, 'hand'),
-  moveCardsBetweenZonesAction(M20.mountain, null, 'hand'),
-  moveCardsBetweenZonesAction(A25.darkRitual, null, 'hand'),
-  moveCardsBetweenZonesAction(M11.pyreticRitual, null, 'hand')
+  moveCardBetweenZonesAction(M20.swamp, null, 'hand'),
+  moveCardBetweenZonesAction(M20.mountain, null, 'hand'),
+  moveCardBetweenZonesAction(A25.darkRitual, null, 'hand'),
+  moveCardBetweenZonesAction(M11.pyreticRitual, null, 'hand')
 ]);
 
 ReactDOM.render(

@@ -23,7 +23,7 @@ export const activateAbilityAction = (
   abilityId
 });
 
-export const moveCardsBetweenZonesAction = (
+export const moveCardBetweenZonesAction = (
   card: Card,
   from: Zone,
   to: Zone
