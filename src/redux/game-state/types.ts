@@ -2,17 +2,8 @@ import { all, any, equals, map, pipe, sum, values } from 'ramda';
 import { isBoolean } from 'util';
 import { assert } from '../util';
 
-export interface ManaPool {
-  r: number;
-  g: number;
-  b: number;
-  u: number;
-  w: number;
-  c: number;
-}
-
 export namespace ManaPool {
-  export const NULL: ManaPool = {
+  export const NULL: AnAmountOfMana = {
     r: 0,
     g: 0,
     b: 0,
@@ -24,7 +15,7 @@ export namespace ManaPool {
   export const Add = (
     mana1: AnAmountOfMana,
     mana2: AnAmountOfMana
-  ): ManaPool => ({
+  ): AnAmountOfMana => ({
     r: (mana1.r || 0) + (mana2.r || 0),
     g: (mana1.g || 0) + (mana2.g || 0),
     b: (mana1.b || 0) + (mana2.b || 0),
@@ -77,7 +68,16 @@ export interface HasTypeInfo {
   typeInfo: CardTypeInfo;
 }
 
-export type AnAmountOfMana = Partial<ManaPool>;
+type RED = 'r';
+type BLUE = 'u';
+type GREEN = 'g';
+type BLACK = 'b';
+type WHITE = 'w';
+type COLORLESS = 'c';
+
+export type ManaColor = RED | BLUE | GREEN | BLACK | WHITE | COLORLESS;
+
+export type AnAmountOfMana = Partial<{ [Color in ManaColor]: number }>;
 
 export interface CardPrototype extends HasTypeInfo {
   castingCost: AnAmountOfMana;
@@ -109,13 +109,13 @@ export namespace Card {
 
   export const NULL = Card.from(CardPrototype.NULL, 0);
 
-  export const getColor = (card: Card): Array<keyof ManaPool> => {
+  export const getColor = (card: Card): ManaColor[] => {
     const result = (Object.entries(card.castingCost) as Array<
-      [keyof ManaPool, number]
+      [ManaColor, number]
     >).reduce(
       (acc, [color, costAmount]) =>
         color !== 'c' && costAmount > 0 ? [...acc, color] : acc,
-      [] as Array<keyof ManaPool>
+      [] as ManaColor[]
     );
 
     return result.length > 0 ? result : ['c'];
@@ -138,7 +138,7 @@ export namespace Permanent {
   export const NULL: Permanent = Permanent.from(Card.NULL);
 }
 
-export type ActivationCost = ManaPool & {
+export type ActivationCost = AnAmountOfMana & {
   tapSelf: boolean;
 };
 
@@ -255,7 +255,7 @@ export namespace Zone {
 }
 
 export interface GameState {
-  manaPool: ManaPool;
+  manaPool: AnAmountOfMana;
   health: number;
   hand: Card[];
   board: Permanent[];
@@ -311,7 +311,7 @@ interface PopStackAction {
 export const REQUEST_PAY_SINGLE_MANA_COST = 'REQUEST_PAY_SINGLE_MANA_COST';
 interface RequestPaySingleManaCostAction {
   type: typeof REQUEST_PAY_SINGLE_MANA_COST;
-  mana: keyof ManaPool;
+  mana: ManaColor;
 }
 
 export type GameStateActions =

@@ -1,8 +1,7 @@
-import { Card, GameStateActions, Zone } from './types';
+import { Card, GameStateActions, ManaColor, Zone } from './types';
 import {
   ACTIVATE_ABILITY,
   CAST,
-  ManaPool,
   MOVE_CARD_BETWEEN_ZONES,
   POP_STACK,
   REQUEST_PAY_SINGLE_MANA_COST
@@ -38,7 +37,7 @@ export const popStackAction = (): GameStateActions => ({
 });
 
 export const requestPaySingleManaCostAction = (
-  mana: keyof ManaPool
+  mana: ManaColor
 ): GameStateActions => ({
   type: REQUEST_PAY_SINGLE_MANA_COST,
   mana
