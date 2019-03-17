@@ -4,13 +4,13 @@ import {
   AnAmountOfMana,
   Card,
   GameState,
-  GameStateActions,
-  ManaPool
+  GameStateActions
 } from '../../../redux/game-state/types';
 import CardComponent from '../card-component/CardComponent';
 import CardstackComponent from '../card-stack-component/CardstackComponent';
 import { Dispatch } from 'redux';
 import { popStackAction } from '../../../redux/game-state/actions';
+import { isEmpty } from '../../../redux/util';
 
 type StateProps = {
   stack: Card[];
@@ -38,7 +38,7 @@ const StackAdapter: React.FunctionComponent<Props> = ({
           />
         ))}
       </CardstackComponent>
-      {ManaPool.IsEmpty(owedMana) ? (
+      {isEmpty(owedMana) ? (
         <button onClick={popStack}>Resolve next on stack</button>
       ) : (
         <div>Can't resolve next on stack, pay mana cost first!</div>

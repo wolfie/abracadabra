@@ -1,5 +1,6 @@
-import { AnAmountOfMana, GameState, ManaColor } from '../types';
+import { AnAmountOfEachMana, GameState, ManaColor } from '../types';
 import { mapObjIndexed } from 'ramda';
+import { manaExactly } from '../../util';
 
 const reduceColorByOne = (color: ManaColor) => (num: number, key: string) =>
   key === color ? num - 1 : num;
@@ -8,11 +9,13 @@ const requestPaySingleManaCostReducer = (
   state: GameState,
   color: ManaColor
 ) => {
-  const currentOwedOfColor = state.owedMana[color] || 0;
+  const owedExactly = manaExactly(state.owedMana);
+
+  const currentOwedOfColor = owedExactly[color];
   const exactlyThisColorIsNeeded =
-    currentOwedOfColor > 0 && (state.manaPool[color] || 0) > 0;
+    currentOwedOfColor > 0 && owedExactly[color] > 0;
   const useThisColorForGenericMana =
-    !exactlyThisColorIsNeeded && (state.owedMana.c || 0) > 0;
+    !exactlyThisColorIsNeeded && owedExactly.c > 0;
   const isValidManaPayment =
     exactlyThisColorIsNeeded || useThisColorForGenericMana;
 
@@ -22,7 +25,7 @@ const requestPaySingleManaCostReducer = (
       manaPool: mapObjIndexed(
         reduceColorByOne(color),
         state.manaPool
-      ) as AnAmountOfMana,
+      ) as AnAmountOfEachMana,
       owedMana: mapObjIndexed(
         reduceColorByOne(exactlyThisColorIsNeeded ? color : 'c'),
         state.owedMana

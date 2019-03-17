@@ -1,5 +1,5 @@
-import { Card, GameState, ManaPool, Zone } from '../types';
-import { isLand } from '../../util';
+import { Card, GameState, Zone } from '../types';
+import { add, isLand } from '../../util';
 import moveCardBetweenZonesReducer from './move-card-between-zones';
 
 const castReducer = (state: GameState, card: Card) => {
@@ -19,7 +19,7 @@ const castReducer = (state: GameState, card: Card) => {
     // Require casting cost https://www.yawgatog.com/resources/magic-rules/#R6012f
     state = {
       ...state,
-      owedMana: ManaPool.Add(state.owedMana, card.castingCost)
+      owedMana: add(state.owedMana, card.castingCost)
     };
 
     return state;

@@ -6,10 +6,10 @@ import {
 import * as M11 from '../sets/M11';
 import * as A25 from '../sets/A25';
 import * as M20 from '../sets/M20';
-import { Card, GameState, GameStateActions, ManaPool, Zone } from './types';
+import { Card, GameState, GameStateActions, Zone } from './types';
 import 'jest';
 import { createStore, Store as ReduxStore } from 'redux';
-import { isLand } from '../util';
+import { isEmpty, isLand } from '../util';
 import gameStateReducer from './reducer';
 
 type Store = ReduxStore<GameState, GameStateActions>;
@@ -72,24 +72,24 @@ describe('gameStateReducer', () => {
 
     it('should place a zero-costing non-land card on the stack', () => {
       const ornithopter = Card.from(M11.ornithopter, 0);
-      expect(ManaPool.IsEmpty(ornithopter.castingCost)).toBeTruthy();
+      expect(isEmpty(ornithopter.castingCost)).toBeTruthy();
       store.dispatch(moveCardBetweenZonesAction(ornithopter, null, 'hand'));
 
       store.dispatch(castAction(ornithopter));
 
       expect(Zone.find(ornithopter, store.getState())).toBe('stack');
-      expect(ManaPool.IsEmpty(store.getState().owedMana)).toBeTruthy();
+      expect(isEmpty(store.getState().owedMana)).toBeTruthy();
     });
 
     it('should require payment for a non-free card', () => {
       const darkRitual = Card.from(A25.darkRitual, 0);
-      expect(ManaPool.IsEmpty(darkRitual.castingCost)).toBeFalsy();
+      expect(isEmpty(darkRitual.castingCost)).toBeFalsy();
       store.dispatch(moveCardBetweenZonesAction(darkRitual, null, 'hand'));
 
       store.dispatch(castAction(darkRitual));
 
       expect(Zone.find(darkRitual, store.getState())).toBe('stack');
-      expect(ManaPool.IsEmpty(store.getState().owedMana)).toBeFalsy();
+      expect(isEmpty(store.getState().owedMana)).toBeFalsy();
     });
   });
 
