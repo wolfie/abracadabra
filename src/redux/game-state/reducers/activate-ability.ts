@@ -1,5 +1,5 @@
-import { Ability, GameState, ManaAbility, ManaPool, Permanent } from '../types';
-import { findPermanent } from '../../util';
+import { Ability, GameState, ManaAbility, Permanent } from '../types';
+import { add, findPermanent } from '../../util';
 
 const tapPermanent = (
   state: GameState,
@@ -14,7 +14,7 @@ const tapPermanent = (
 });
 
 function gainMana(state: GameState, ability: ManaAbility): GameState {
-  return { ...state, manaPool: ManaPool.Add(state.manaPool, ability.effect()) };
+  return { ...state, manaPool: add(state.manaPool, ability.effect()) };
 }
 
 const payPossibleSelfTapReducer = (

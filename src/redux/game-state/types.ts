@@ -1,9 +1,8 @@
-import { all, any, equals, map, pipe, sum, values } from 'ramda';
-import { isBoolean } from 'util';
+import { any, map, pipe } from 'ramda';
 import { assert } from '../util';
 
 export namespace ManaPool {
-  export const NULL: AnAmountOfMana = {
+  export const NULL: AnAmountOfEachMana = {
     r: 0,
     g: 0,
     b: 0,
@@ -11,25 +10,6 @@ export namespace ManaPool {
     w: 0,
     c: 0
   };
-
-  export const Add = (
-    mana1: AnAmountOfMana,
-    mana2: AnAmountOfMana
-  ): AnAmountOfMana => ({
-    r: (mana1.r || 0) + (mana2.r || 0),
-    g: (mana1.g || 0) + (mana2.g || 0),
-    b: (mana1.b || 0) + (mana2.b || 0),
-    u: (mana1.u || 0) + (mana2.u || 0),
-    w: (mana1.w || 0) + (mana2.w || 0),
-    c: (mana1.c || 0) + (mana2.c || 0)
-  });
-
-  export const IsEmpty = (mana: AnAmountOfMana) =>
-    pipe(
-      values,
-      sum,
-      equals(0)
-    )(mana);
 }
 
 export type CardSuperType = 'basic';
@@ -77,7 +57,8 @@ type COLORLESS = 'c';
 
 export type ManaColor = RED | BLUE | GREEN | BLACK | WHITE | COLORLESS;
 
-export type AnAmountOfMana = Partial<{ [Color in ManaColor]: number }>;
+export type AnAmountOfEachMana = { [Color in ManaColor]: number };
+export type AnAmountOfMana = Partial<AnAmountOfEachMana>;
 
 export interface CardPrototype extends HasTypeInfo {
   castingCost: AnAmountOfMana;
@@ -139,7 +120,7 @@ export namespace Permanent {
 }
 
 export type ActivationCost = AnAmountOfMana & {
-  tapSelf: boolean;
+  tapSelf?: boolean;
 };
 
 export namespace ActivationCost {
@@ -147,15 +128,6 @@ export namespace ActivationCost {
     ...ManaPool.NULL,
     tapSelf: false
   };
-
-  const isDebtFree = (entry: ValueOf<ActivationCost>) =>
-    isBoolean(entry) ? !entry : entry === 0;
-
-  export const isEmpty: (cost: ActivationCost) => boolean = pipe(
-    values,
-    map(isDebtFree),
-    all(debtFree => debtFree === true)
-  );
 }
 
 type EffectSpeed = 'mana' | 'instant' | 'sorcery';

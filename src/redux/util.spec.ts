@@ -1,5 +1,5 @@
-import { GameState, GameStateActions } from './game-state/types';
-import { findPermanent } from './util';
+import { GameState, GameStateActions, ManaPool } from './game-state/types';
+import { findPermanent, add } from './util';
 import { createStore, Store as ReduxStore } from 'redux';
 import gameStateReducer from './game-state/reducer';
 import { swamp } from './sets/M20';
@@ -24,5 +24,11 @@ describe('findPermanent', () => {
     store.dispatch(moveCardBetweenZonesAction(card, null, 'battlefield'));
     const permanent = findPermanent(store.getState(), PERMANENT_ID);
     expect(permanent).toBeDefined();
+  });
+});
+
+describe('add', () => {
+  it('does nothing when adding an empty object', () => {
+    expect(add({}, {})).toMatchObject(ManaPool.NULL);
   });
 });
