@@ -1,6 +1,5 @@
 import {
   Ability,
-  ActivationCost,
   Card,
   GameState,
   GameStateActions,
@@ -16,72 +15,13 @@ import {
   REQUEST_PAY_SINGLE_MANA_COST,
   TAP_PERMANENT
 } from './types';
-import { map, mapObjIndexed, pipe, sum, uniq, values } from 'ramda';
+import { map, mapObjIndexed, pipe, uniq } from 'ramda';
 import { assert } from '../util';
 
 export const getPermanent = (state: GameState, id: number): Permanent => {
   const card = state.board.find(permanentOnBoard => permanentOnBoard.id === id);
   if (card) return card;
   throw new Error(`could not find permanent with id ${id}`);
-};
-
-// @ts-ignore
-const payManaCost = (
-  manaPool: ManaPool,
-  cost: ActivationCost
-): [ManaPool, ActivationCost] => {
-  const deplete = (a: number, b: number): [number, number] => [
-    Math.max(0, a - b),
-    Math.abs(a - b)
-  ];
-
-  const getConvertedManaValue = pipe(
-    values,
-    sum
-  );
-
-  const [bManaLeft, bCostLeft] = deplete(manaPool.b, cost.b);
-  const [rManaLeft, rCostLeft] = deplete(manaPool.r, cost.r);
-  const [gManaLeft, gCostLeft] = deplete(manaPool.g, cost.g);
-  const [uManaLeft, uCostLeft] = deplete(manaPool.u, cost.u);
-  const [wManaLeft, wCostLeft] = deplete(manaPool.w, cost.w);
-  const [cManaLeft, cCostLeft] = deplete(manaPool.c, cost.c);
-
-  const naiveResult: [ManaPool, ActivationCost] = [
-    {
-      b: bManaLeft,
-      r: rManaLeft,
-      g: gManaLeft,
-      u: uManaLeft,
-      w: wManaLeft,
-      c: cManaLeft
-    },
-    {
-      b: bCostLeft,
-      r: rCostLeft,
-      g: gCostLeft,
-      u: uCostLeft,
-      w: wCostLeft,
-      c: cCostLeft,
-      tapSelf: cost.tapSelf
-    }
-  ];
-  const convertedManaLeft = getConvertedManaValue(naiveResult[0]);
-  const depleteRemainingManaPool = convertedManaLeft <= cCostLeft;
-  return depleteRemainingManaPool
-    ? [
-        ManaPool.NULL,
-        {
-          b: bCostLeft,
-          r: rCostLeft,
-          g: gCostLeft,
-          u: uCostLeft,
-          w: wCostLeft,
-          c: cCostLeft - convertedManaLeft,
-          tapSelf: cost.tapSelf
-        }
-      ]
-    : naiveResult;
 };
 
 const payPossibleSelfTapReducer = (
@@ -281,6 +221,10 @@ const gameStateReducer_ = (
     case POP_STACK: {
       const isNotLastelement = (_: unknown, i: number) =>
         i !== state.stack.length - 1;
+
+      if (state.stack.length === 0) {
+        throw new Error("Stack is empty, can't pop it");
+      }
 
       const poppedStackObject = state.stack[state.stack.length - 1];
       const stackWithoutPoppedObject = state.stack.filter(isNotLastelement);
