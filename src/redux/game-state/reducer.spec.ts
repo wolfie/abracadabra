@@ -1,9 +1,4 @@
 import {
-  gameStateReducer,
-  getPermanent,
-  moveCardBetweenZonesReducer
-} from './reducers';
-import {
   castAction,
   moveCardBetweenZonesAction,
   popStackAction,
@@ -23,6 +18,8 @@ import {
 import 'jest';
 import { createStore, Store as ReduxStore } from 'redux';
 import { isLand } from '../util';
+import moveCardBetweenZonesReducer from './reducers/move-card-between-zones';
+import gameStateReducer from './reducer';
 
 type Store = ReduxStore<GameState, GameStateActions>;
 
@@ -37,17 +34,6 @@ const gameWithOneCard: GameState = {
   ...GameState.NULL,
   board: [PERMANENT1]
 };
-
-describe('getPermanent', () => {
-  it('should not find a non-existent card', () => {
-    expect(() => getPermanent(GameState.NULL, PERMANENT_ID)).toThrowError();
-  });
-
-  it('should find an existent card', () => {
-    const permanent = getPermanent(gameWithOneCard, PERMANENT_ID);
-    expect(permanent).toBeDefined();
-  });
-});
 
 describe('moveCardBetweenZonesReducer', () => {
   const card = { ...Card.NULL, id: PERMANENT_ID };

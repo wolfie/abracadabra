@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { applyMiddleware, createStore } from 'redux';
 import reduxMulti from 'redux-multi';
 import * as ReactDOM from 'react-dom';
-import { gameStateReducer } from '../redux/game-state/reducers';
+import gameStateReducer from '../redux/game-state/reducer';
 import Game from './Game';
 import * as M20 from '../redux/sets/M20';
 import * as A25 from '../redux/sets/A25';

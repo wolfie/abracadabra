@@ -1,4 +1,4 @@
-import { Card, GameState, HasTypeInfo } from './game-state/types';
+import { Card, GameState, HasTypeInfo, Permanent } from './game-state/types';
 
 // TODO: add support for optional message
 // TODO: conditionally replace with a noop function in production builds
@@ -17,4 +17,10 @@ export const canProvideManaNow = (state: GameState) => (
   card: Card
 ): boolean => {
   return card.canProvideManaNow ? card.canProvideManaNow(state, card) : false;
+};
+
+export const findPermanent = (state: GameState, id: number): Permanent => {
+  const card = state.board.find(permanentOnBoard => permanentOnBoard.id === id);
+  if (card) return card;
+  throw new Error(`could not find permanent with id ${id}`);
 };
