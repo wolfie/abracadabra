@@ -16,7 +16,7 @@ import {
   TAP_PERMANENT
 } from './types';
 import { map, mapObjIndexed, pipe, uniq } from 'ramda';
-import { assert } from '../util';
+import { assert, canProvideManaNow, isInstant, isLand } from '../util';
 
 export const getPermanent = (state: GameState, id: number): Permanent => {
   const card = state.board.find(permanentOnBoard => permanentOnBoard.id === id);
@@ -108,10 +108,10 @@ export const moveCardBetweenZonesReducer = (
 const cardToId = (card: Card) => card.id;
 
 const findInstantsIn = (zone: Zone, state: GameState) =>
-  Zone.toCardArray(zone, state).filter(Card.isInstant);
+  Zone.toCardArray(zone, state).filter(isInstant);
 
 const findManaSourcesIn = (zone: Zone, state: GameState) =>
-  Zone.toCardArray(zone, state).filter(card => card.canProvideManaNow(state));
+  Zone.toCardArray(zone, state).filter(canProvideManaNow(state));
 
 const whenStackIsPopulatedAndNothingIsOwed = (state: GameState): Card[] =>
   state.stack.length > 0 && ManaPool.IsEmpty(state.owedMana)
@@ -193,7 +193,7 @@ const gameStateReducer_ = (
 
       const card = action.card;
       const originZone = Zone.find(card, state);
-      if (Card.isLand(card)) {
+      if (isLand(card)) {
         // Special action, playing a land: https://www.yawgatog.com/resources/magic-rules/#R1152a
 
         return moveCardBetweenZonesReducer(

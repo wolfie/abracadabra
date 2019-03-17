@@ -22,6 +22,7 @@ import {
 } from './types';
 import 'jest';
 import { createStore, Store as ReduxStore } from 'redux';
+import { isLand } from '../util';
 
 type Store = ReduxStore<GameState, GameStateActions>;
 
@@ -170,8 +171,8 @@ describe('gameStateReducer', () => {
     });
 
     it('should cast a land directly on the battlefield', () => {
-      const mountain = M20.mountain;
-      expect(Card.isLand(mountain)).toBeTruthy();
+      const mountain = Card.from(M20.mountain, 0);
+      expect(isLand(mountain)).toBeTruthy();
       store.dispatch(moveCardBetweenZonesAction(mountain, null, 'hand'));
 
       store.dispatch(castAction(mountain));
@@ -180,7 +181,7 @@ describe('gameStateReducer', () => {
     });
 
     it('should place a zero-costing non-land card on the stack', () => {
-      const ornithopter = M11.ornithopter;
+      const ornithopter = Card.from(M11.ornithopter, 0);
       expect(ManaPool.IsEmpty(ornithopter.castingCost)).toBeTruthy();
       store.dispatch(moveCardBetweenZonesAction(ornithopter, null, 'hand'));
 
@@ -191,7 +192,7 @@ describe('gameStateReducer', () => {
     });
 
     it('should require payment for a non-free card', () => {
-      const darkRitual = A25.darkRitual;
+      const darkRitual = Card.from(A25.darkRitual, 0);
       expect(ManaPool.IsEmpty(darkRitual.castingCost)).toBeFalsy();
       store.dispatch(moveCardBetweenZonesAction(darkRitual, null, 'hand'));
 

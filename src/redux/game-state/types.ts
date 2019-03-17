@@ -73,28 +73,40 @@ export namespace CardLifetimeEventHandler {
   export const NULL: CardLifetimeEventHandler = state => state;
 }
 
-export interface Card {
+export interface HasTypeInfo {
+  typeInfo: CardTypeInfo;
+}
+
+export interface CardPrototype extends HasTypeInfo {
   // TODO this should be its own type instead of a partial manapool. Doesn't make contextual sense.
   castingCost: Partial<ManaPool>;
   name: string;
-  /** Inique id for the game object for the game in progress */
-  id: number;
   abilities: Ability[];
   onResolve: CardLifetimeEventHandler;
-  typeInfo: CardTypeInfo;
-  canProvideManaNow: (state: GameState) => boolean;
+  canProvideManaNow?: (state: GameState, self: Card) => boolean;
+}
+
+export namespace CardPrototype {
+  export const NULL: CardPrototype = {
+    castingCost: {},
+    name: '',
+    abilities: [],
+    typeInfo: { types: [] },
+    onResolve: state => state
+  };
+}
+
+export interface Card extends CardPrototype {
+  id: number;
 }
 
 export namespace Card {
-  export const NULL: Card = {
-    castingCost: {},
-    name: '',
-    id: 0,
-    abilities: [],
-    typeInfo: { types: [] },
-    onResolve: state => state,
-    canProvideManaNow: () => false
-  };
+  export const from = (p: CardPrototype, id: number): Card => ({
+    ...p,
+    id
+  });
+
+  export const NULL = Card.from(CardPrototype.NULL, 0);
 
   export const getColor = (card: Card): Array<keyof ManaPool> => {
     const result = (Object.entries(card.castingCost) as Array<
@@ -107,12 +119,6 @@ export namespace Card {
 
     return result.length > 0 ? result : ['c'];
   };
-
-  export const isLand = (card: Card): boolean =>
-    card.typeInfo.types.indexOf('land') >= 0;
-
-  export const isInstant = (card: Card): boolean =>
-    card.typeInfo.types.indexOf('instant') >= 0;
 }
 
 export type Permanent = Card & {
@@ -120,13 +126,15 @@ export type Permanent = Card & {
 };
 
 export namespace Permanent {
-  export const NULL: Permanent = {
-    ...Card.NULL,
-    isTapped: false
-  };
+  export const from = (card: Card, isTapped = false): Permanent => ({
+    ...card,
+    isTapped
+  });
 
-  export const matches = (card: Card): card is Permanent =>
+  export const matches = (card: Card | CardPrototype): card is Permanent =>
     (card as any).isTapped !== undefined;
+
+  export const NULL: Permanent = Permanent.from(Card.NULL);
 }
 
 export type ActivationCost = ManaPool & {

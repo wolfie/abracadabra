@@ -2,34 +2,33 @@ import {
   Ability,
   Card,
   CardLifetimeEventHandler,
+  CardPrototype,
   CardTypeInfo,
   GameState,
   Permanent,
   Zone
 } from '../game-state/types';
 
-export const swamp: Card = {
+export const swamp: CardPrototype = {
   castingCost: {},
   abilities: [Ability.TapForBlackMana],
-  id: 0, // TODO replace with a given parameter
   name: 'Swamp',
   typeInfo: CardTypeInfo.Swamp,
   onResolve: CardLifetimeEventHandler.NULL,
-  canProvideManaNow: (state: GameState) =>
-    Zone.cardIsIn('battlefield', swamp, state) &&
-    Permanent.matches(swamp) &&
-    swamp.isTapped
+  canProvideManaNow: (state: GameState, self: Card) =>
+    Zone.cardIsIn('battlefield', self, state) &&
+    Permanent.matches(self) &&
+    self.isTapped
 };
 
-export const mountain: Card = {
+export const mountain: CardPrototype = {
   castingCost: {},
   abilities: [Ability.TapForRedMana],
-  id: 3, // TODO replace with a given parameter
   name: 'Mountain',
   typeInfo: CardTypeInfo.Mountain,
   onResolve: CardLifetimeEventHandler.NULL,
-  canProvideManaNow: (state: GameState) =>
-    Zone.cardIsIn('battlefield', mountain, state) &&
-    Permanent.matches(mountain) &&
-    mountain.isTapped
+  canProvideManaNow: (state: GameState, self: Card) =>
+    Zone.cardIsIn('battlefield', self, state) &&
+    Permanent.matches(self) &&
+    self.isTapped
 };
