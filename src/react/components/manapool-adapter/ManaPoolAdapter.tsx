@@ -4,7 +4,8 @@ import {
   AnAmountOfMana,
   GameState,
   GameStateActions,
-  ManaPool
+  ManaPool,
+  ManaColor
 } from '../../../redux/game-state/types';
 import * as styles from './ManaPoolAdapter.scss';
 import * as classnames from 'classnames/bind';
@@ -13,12 +14,12 @@ import { requestPaySingleManaCostAction } from '../../../redux/game-state/action
 const css = classnames.bind(styles);
 
 type StateProps = {
-  manaPool: ManaPool;
+  manaPool: AnAmountOfMana;
   owed: AnAmountOfMana;
 };
 
 type DispatchProps = {
-  requestPaySingleManaCost: (mana: keyof ManaPool) => GameStateActions;
+  requestPaySingleManaCost: (mana: ManaColor) => GameStateActions;
 };
 
 type Props = StateProps & DispatchProps;
@@ -28,12 +29,13 @@ const ManaPoolAdapter: React.FunctionComponent<Props> = ({
   owed,
   requestPaySingleManaCost
 }) => {
-  const colorIsClickable = (colorKey: keyof ManaPool) =>
-    manaPool[colorKey] > 0 && ((owed.c || 0) > 0 || (owed[colorKey] || 0) > 0);
+  const colorIsClickable = (colorKey: ManaColor) =>
+    (manaPool[colorKey] || 0) > 0 &&
+    ((owed.c || 0) > 0 || (owed[colorKey] || 0) > 0);
   return (
     <div className={css('manapool', { highlighted: !ManaPool.IsEmpty(owed) })}>
       {Object.entries(manaPool).map(([key_, mana]) => {
-        const key = key_ as keyof ManaPool;
+        const key = key_ as ManaColor;
         const isClickable = colorIsClickable(key);
         const onClick = isClickable
           ? () => requestPaySingleManaCost(key)
