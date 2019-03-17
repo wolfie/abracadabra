@@ -4,10 +4,8 @@ import {
   CAST,
   MOVE_CARD_BETWEEN_ZONES,
   POP_STACK,
-  REQUEST_PAY_SINGLE_MANA_COST,
-  TAP_PERMANENT
+  REQUEST_PAY_SINGLE_MANA_COST
 } from './types';
-import tapPermanentReducer from './reducers/tap-permanent';
 import moveCardBetweenZonesReducer from './reducers/move-card-between-zones';
 import activateAbilityReducer from './reducers/activate-ability';
 import castReducer from './reducers/cast';
@@ -22,10 +20,6 @@ const gameStateReducer = (
   if (action.type.startsWith('@@')) return state;
 
   switch (action.type) {
-    case TAP_PERMANENT: {
-      return tapPermanentReducer(state, action.id);
-    }
-
     case MOVE_CARD_BETWEEN_ZONES:
       return moveCardBetweenZonesReducer(
         state,

@@ -5,14 +5,8 @@ import {
   ManaPool,
   MOVE_CARD_BETWEEN_ZONES,
   POP_STACK,
-  REQUEST_PAY_SINGLE_MANA_COST,
-  TAP_PERMANENT
+  REQUEST_PAY_SINGLE_MANA_COST
 } from './types';
-
-export const tapPermanentAction = (id: number): GameStateActions => ({
-  type: TAP_PERMANENT,
-  id
-});
 
 export const activateAbilityAction = (
   permanentId: number,

@@ -1,8 +1,7 @@
 import {
   castAction,
   moveCardBetweenZonesAction,
-  popStackAction,
-  tapPermanentAction
+  popStackAction
 } from './actions';
 import * as M11 from '../sets/M11';
 import * as A25 from '../sets/A25';
@@ -139,17 +138,6 @@ describe('moveCardBetweenZonesReducer', () => {
 });
 
 describe('gameStateReducer', () => {
-  describe('tapAction', () => {
-    it('should tap a card by id', () => {
-      // TODO remove state use, and use store instead
-      const action = tapPermanentAction(0);
-
-      expect(gameWithOneCard.board[0].isTapped).toBeFalsy();
-      const tappedGameState = gameStateReducer(gameWithOneCard, action);
-      expect(tappedGameState.board[0].isTapped).toBeTruthy();
-    });
-  });
-
   describe('castAction', () => {
     let store: Store;
     beforeEach(() => {

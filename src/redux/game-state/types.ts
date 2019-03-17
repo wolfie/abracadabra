@@ -281,12 +281,6 @@ export namespace GameState {
   };
 }
 
-export const TAP_PERMANENT = 'TAP_PERMANENT';
-interface TapAction {
-  type: typeof TAP_PERMANENT;
-  id: number;
-}
-
 export const ACTIVATE_ABILITY = 'ACTIVATE_ABILITY';
 interface ActivateAbilityAction {
   type: typeof ACTIVATE_ABILITY;
@@ -320,7 +314,6 @@ interface RequestPaySingleManaCostAction {
 }
 
 export type GameStateActions =
-  | TapAction
   | ActivateAbilityAction
   | MoveCardBetweenZonesAction
   | CastAction
