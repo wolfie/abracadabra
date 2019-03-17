@@ -5,7 +5,7 @@ import {
 } from './reducers';
 import {
   castAction,
-  moveCardsBetweenZonesAction,
+  moveCardBetweenZonesAction,
   popStackAction,
   tapPermanentAction
 } from './actions';
@@ -172,7 +172,7 @@ describe('gameStateReducer', () => {
     it('should cast a land directly on the battlefield', () => {
       const mountain = M20.mountain;
       expect(Card.isLand(mountain)).toBeTruthy();
-      store.dispatch(moveCardsBetweenZonesAction(mountain, null, 'hand'));
+      store.dispatch(moveCardBetweenZonesAction(mountain, null, 'hand'));
 
       store.dispatch(castAction(mountain));
 
@@ -182,7 +182,7 @@ describe('gameStateReducer', () => {
     it('should place a zero-costing non-land card on the stack', () => {
       const ornithopter = M11.ornithopter;
       expect(ManaPool.IsEmpty(ornithopter.castingCost)).toBeTruthy();
-      store.dispatch(moveCardsBetweenZonesAction(ornithopter, null, 'hand'));
+      store.dispatch(moveCardBetweenZonesAction(ornithopter, null, 'hand'));
 
       store.dispatch(castAction(ornithopter));
 
@@ -193,7 +193,7 @@ describe('gameStateReducer', () => {
     it('should require payment for a non-free card', () => {
       const darkRitual = A25.darkRitual;
       expect(ManaPool.IsEmpty(darkRitual.castingCost)).toBeFalsy();
-      store.dispatch(moveCardsBetweenZonesAction(darkRitual, null, 'hand'));
+      store.dispatch(moveCardBetweenZonesAction(darkRitual, null, 'hand'));
 
       store.dispatch(castAction(darkRitual));
 
@@ -218,7 +218,7 @@ describe('gameStateReducer', () => {
       const onResolve = jest.fn();
       onResolve.mockImplementation(state => state);
       const card = { ...Card.NULL, onResolve };
-      store.dispatch(moveCardsBetweenZonesAction(card, null, 'stack'));
+      store.dispatch(moveCardBetweenZonesAction(card, null, 'stack'));
 
       store.dispatch(popStackAction());
       expect(onResolve).toHaveBeenCalled();
