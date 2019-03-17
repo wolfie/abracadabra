@@ -42,10 +42,18 @@ export namespace ManaPool {
 }
 
 export type CardSuperType = 'basic';
-export type CardType = 'instant' | 'land' | 'swamp' | 'mountain';
+export type CardType =
+  | 'instant'
+  | 'land'
+  | 'swamp'
+  | 'mountain'
+  | 'artifact'
+  | 'creature';
+export type CardSubType = 'thopter';
 export interface CardTypeInfo {
   superType?: CardSuperType;
   types: CardType[];
+  subTypes?: CardSubType[];
 }
 
 export namespace CardTypeInfo {
@@ -66,8 +74,10 @@ export namespace CardLifetimeEventHandler {
 }
 
 export interface Card {
+  // TODO this should be its own type instead of a partial manapool. Doesn't make contextual sense.
   castingCost: Partial<ManaPool>;
   name: string;
+  /** Inique id for the game object for the game in progress */
   id: number;
   abilities: Ability[];
   onResolve: CardLifetimeEventHandler;
