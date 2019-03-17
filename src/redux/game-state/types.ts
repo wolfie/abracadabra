@@ -22,23 +22,23 @@ export namespace ManaPool {
   };
 
   export const Add = (
-    manaPool: Partial<ManaPool>,
-    addition: Partial<ManaPool>
+    mana1: AnAmountOfMana,
+    mana2: AnAmountOfMana
   ): ManaPool => ({
-    r: (manaPool.r || 0) + (addition.r || 0),
-    g: (manaPool.g || 0) + (addition.g || 0),
-    b: (manaPool.b || 0) + (addition.b || 0),
-    u: (manaPool.u || 0) + (addition.u || 0),
-    w: (manaPool.w || 0) + (addition.w || 0),
-    c: (manaPool.c || 0) + (addition.c || 0)
+    r: (mana1.r || 0) + (mana2.r || 0),
+    g: (mana1.g || 0) + (mana2.g || 0),
+    b: (mana1.b || 0) + (mana2.b || 0),
+    u: (mana1.u || 0) + (mana2.u || 0),
+    w: (mana1.w || 0) + (mana2.w || 0),
+    c: (mana1.c || 0) + (mana2.c || 0)
   });
 
-  export const IsEmpty = (partialManaPool: Partial<ManaPool>) =>
+  export const IsEmpty = (mana: AnAmountOfMana) =>
     pipe(
       values,
       sum,
       equals(0)
-    )(partialManaPool);
+    )(mana);
 }
 
 export type CardSuperType = 'basic';
@@ -77,9 +77,10 @@ export interface HasTypeInfo {
   typeInfo: CardTypeInfo;
 }
 
+export type AnAmountOfMana = Partial<ManaPool>;
+
 export interface CardPrototype extends HasTypeInfo {
-  // TODO this should be its own type instead of a partial manapool. Doesn't make contextual sense.
-  castingCost: Partial<ManaPool>;
+  castingCost: AnAmountOfMana;
   name: string;
   abilities: Ability[];
   onResolve: CardLifetimeEventHandler;
@@ -161,7 +162,7 @@ type EffectSpeed = 'mana' | 'instant' | 'sorcery';
 
 export interface ManaAbility extends Ability {
   isManaAbility: true;
-  effect: () => Partial<ManaPool>;
+  effect: () => AnAmountOfMana;
 }
 
 export interface Ability {
@@ -199,7 +200,7 @@ export namespace Ability {
     canBeActivated: () => false
   };
 
-  export const getManaAbility = (gain: Partial<ManaPool>): ManaAbility => ({
+  export const getManaAbility = (gain: AnAmountOfMana): ManaAbility => ({
     speed: 'mana',
     isManaAbility: true,
     usesStack: false,
@@ -262,7 +263,7 @@ export interface GameState {
   stack: Card[];
   graveyard: Card[];
   nextCardId: number;
-  owedMana: Partial<ManaPool>;
+  owedMana: AnAmountOfMana;
   activatableCardIds: number[];
 }
 

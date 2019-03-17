@@ -1,7 +1,7 @@
 import 'jest';
-import { ActivationCost, Card, ManaPool } from './types';
+import { ActivationCost, AnAmountOfMana, Card, ManaPool } from './types';
 
-const cardWithCost = (castingCost: Partial<ManaPool>): Card => ({
+const cardWithCost = (castingCost: AnAmountOfMana): Card => ({
   ...Card.NULL,
   castingCost
 });

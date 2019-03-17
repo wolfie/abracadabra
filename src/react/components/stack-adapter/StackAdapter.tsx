@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import {
+  AnAmountOfMana,
   Card,
   GameState,
   GameStateActions,
@@ -13,7 +14,7 @@ import { popStackAction } from '../../../redux/game-state/actions';
 
 type StateProps = {
   stack: Card[];
-  owedMana: Partial<ManaPool>;
+  owedMana: AnAmountOfMana;
 };
 type DispatchProps = { popStack: () => unknown };
 type Props = StateProps & DispatchProps;
