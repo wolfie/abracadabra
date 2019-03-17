@@ -6,134 +6,50 @@ import {
 import * as M11 from '../sets/M11';
 import * as A25 from '../sets/A25';
 import * as M20 from '../sets/M20';
-import {
-  Card,
-  GameState,
-  GameStateActions,
-  ManaPool,
-  Permanent,
-  Zone
-} from './types';
+import { Card, GameState, GameStateActions, ManaPool, Zone } from './types';
 import 'jest';
 import { createStore, Store as ReduxStore } from 'redux';
 import { isLand } from '../util';
-import moveCardBetweenZonesReducer from './reducers/move-card-between-zones';
 import gameStateReducer from './reducer';
 
 type Store = ReduxStore<GameState, GameStateActions>;
 
-const PERMANENT_ID = 0;
-const PERMANENT1: Permanent = {
-  ...Permanent.NULL,
-  id: PERMANENT_ID,
-  name: 'Card1'
-};
-
-const gameWithOneCard: GameState = {
-  ...GameState.NULL,
-  board: [PERMANENT1]
-};
-
 describe('moveCardBetweenZonesReducer', () => {
-  const card = { ...Card.NULL, id: PERMANENT_ID };
-  const permanent = { ...card, isTapped: false };
-  const cardIsFoundIn = (cardToFind: Card, cardArray: Card[]): boolean =>
-    cardArray.find(card_ => cardToFind.id === card_.id) !== undefined;
+  const card = Card.from(M20.swamp, 0);
+  let store: Store;
 
-  it('should remove from hand', () => {
-    // TODO remove state use, and use store instead
-    const startState = { ...GameState.NULL, hand: [card] };
-
-    expect(cardIsFoundIn(card, startState.hand)).toBeTruthy();
-
-    const movedState = moveCardBetweenZonesReducer(
-      startState,
-      card,
-      'hand',
-      null
-    );
-
-    expect(cardIsFoundIn(card, movedState.hand)).toBeFalsy();
+  beforeEach(() => {
+    store = createStore(gameStateReducer);
   });
 
-  it('should add to hand', () => {
-    // TODO remove state use, and use store instead
-    const startState = GameState.NULL;
+  it('should add to and remove from hand', () => {
+    expect(() => Zone.find(card, store.getState())).toThrow();
 
-    expect(cardIsFoundIn(card, startState.hand)).toBeFalsy();
+    store.dispatch(moveCardBetweenZonesAction(card, null, 'hand'));
+    expect(Zone.find(card, store.getState())).toBe('hand');
 
-    const movedState = moveCardBetweenZonesReducer(
-      startState,
-      card,
-      null,
-      'hand'
-    );
-
-    expect(cardIsFoundIn(card, movedState.hand)).toBeTruthy();
+    store.dispatch(moveCardBetweenZonesAction(card, 'hand', null));
+    expect(() => Zone.find(card, store.getState())).toThrow();
   });
 
-  it('should remove from battlefield', () => {
-    // TODO remove state use, and use store instead
-    const startState = { ...GameState.NULL, board: [permanent] };
+  it('should add to and remove from battlefield', () => {
+    expect(() => Zone.find(card, store.getState())).toThrow();
 
-    expect(cardIsFoundIn(permanent, startState.board)).toBeTruthy();
+    store.dispatch(moveCardBetweenZonesAction(card, null, 'battlefield'));
+    expect(Zone.find(card, store.getState())).toBe('battlefield');
 
-    const movedState = moveCardBetweenZonesReducer(
-      startState,
-      card,
-      'battlefield',
-      null
-    );
-
-    expect(cardIsFoundIn(permanent, movedState.board)).toBeFalsy();
+    store.dispatch(moveCardBetweenZonesAction(card, 'battlefield', null));
+    expect(() => Zone.find(card, store.getState())).toThrow();
   });
 
-  it('should add to battlefield', () => {
-    // TODO remove state use, and use store instead
-    const startState = GameState.NULL;
+  it('should add to and remove from stack', () => {
+    expect(() => Zone.find(card, store.getState())).toThrow();
 
-    expect(cardIsFoundIn(permanent, startState.board)).toBeFalsy();
+    store.dispatch(moveCardBetweenZonesAction(card, null, 'stack'));
+    expect(Zone.find(card, store.getState())).toBe('stack');
 
-    const movedState = moveCardBetweenZonesReducer(
-      startState,
-      card,
-      null,
-      'battlefield'
-    );
-
-    expect(cardIsFoundIn(permanent, movedState.board)).toBeTruthy();
-  });
-
-  it('should remove from stack', () => {
-    // TODO remove state use, and use store instead
-    const startState = { ...GameState.NULL, stack: [card] };
-
-    expect(cardIsFoundIn(permanent, startState.stack)).toBeTruthy();
-
-    const movedState = moveCardBetweenZonesReducer(
-      startState,
-      card,
-      'stack',
-      null
-    );
-
-    expect(cardIsFoundIn(permanent, movedState.stack)).toBeFalsy();
-  });
-
-  it('should add to stack', () => {
-    // TODO remove state use, and use store instead
-    const startState = GameState.NULL;
-
-    expect(cardIsFoundIn(permanent, startState.stack)).toBeFalsy();
-
-    const movedState = moveCardBetweenZonesReducer(
-      startState,
-      card,
-      null,
-      'stack'
-    );
-
-    expect(cardIsFoundIn(permanent, movedState.stack)).toBeTruthy();
+    store.dispatch(moveCardBetweenZonesAction(card, 'stack', null));
+    expect(() => Zone.find(card, store.getState())).toThrow();
   });
 });
 
