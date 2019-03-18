@@ -1,6 +1,8 @@
 import {
   AnAmountOfEachMana,
+  AnAmountOfEachManaAndGeneric,
   AnAmountOfMana,
+  AnAmountOfManaOrGeneric,
   Card,
   GameState,
   HasTypeInfo,
@@ -34,8 +36,13 @@ export const findPermanent = (state: GameState, id: number): Permanent => {
   throw new Error(`could not find permanent with id ${id}`);
 };
 
-export const manaExactly = (someMana: AnAmountOfMana): AnAmountOfEachMana => ({
+interface ManaFiller {
+  (someMana: AnAmountOfManaOrGeneric): AnAmountOfEachManaAndGeneric;
+  (someMana: AnAmountOfMana): AnAmountOfEachMana;
+}
+export const fillManaObject: ManaFiller = (someMana: any): any => ({
   ...ManaPool.NULL,
+  _: 0,
   ...someMana
 });
 
@@ -43,19 +50,19 @@ export const add = (
   mana1: AnAmountOfMana,
   mana2: AnAmountOfMana
 ): AnAmountOfEachMana => {
-  const exact1 = manaExactly(mana1);
-  const exact2 = manaExactly(mana2);
+  const filledMana1 = fillManaObject(mana1);
+  const filledMana2 = fillManaObject(mana2);
   return {
-    g: exact1.g + exact2.g,
-    r: exact1.r + exact2.r,
-    b: exact1.b + exact2.b,
-    u: exact1.u + exact2.u,
-    w: exact1.w + exact2.w,
-    c: exact1.c + exact2.c
+    g: filledMana1.g + filledMana2.g,
+    r: filledMana1.r + filledMana2.r,
+    b: filledMana1.b + filledMana2.b,
+    u: filledMana1.u + filledMana2.u,
+    w: filledMana1.w + filledMana2.w,
+    c: filledMana1.c + filledMana2.c
   };
 };
 
-export const isEmpty = (mana: AnAmountOfMana) =>
+export const isEmpty = (mana: AnAmountOfManaOrGeneric): boolean =>
   pipe(
     values,
     sum,

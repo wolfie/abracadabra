@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import {
   AnAmountOfMana,
+  AnAmountOfManaOrGeneric,
   GameState,
   GameStateActions,
   ManaColor
@@ -10,12 +11,12 @@ import * as styles from './ManaPoolAdapter.scss';
 import * as classnames from 'classnames/bind';
 import { Dispatch } from 'redux';
 import { requestPaySingleManaCostAction } from '../../../redux/game-state/actions';
-import { isEmpty, manaExactly } from '../../../redux/util';
+import { fillManaObject, isEmpty } from '../../../redux/util';
 const css = classnames.bind(styles);
 
 type StateProps = {
   manaPool: AnAmountOfMana;
-  owed: AnAmountOfMana;
+  owed: AnAmountOfManaOrGeneric;
 };
 
 type DispatchProps = {
@@ -29,8 +30,8 @@ const ManaPoolAdapter: React.FunctionComponent<Props> = ({
   owed,
   requestPaySingleManaCost
 }) => {
-  const manaPoolExactly = manaExactly(manaPool);
-  const owedExactly = manaExactly(owed);
+  const manaPoolExactly = fillManaObject(manaPool);
+  const owedExactly = fillManaObject(owed);
   const colorIsClickable = (colorKey: ManaColor) =>
     manaPoolExactly[colorKey] > 0 &&
     (owedExactly.c > 0 || owedExactly[colorKey] > 0);

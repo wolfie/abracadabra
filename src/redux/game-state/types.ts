@@ -54,14 +54,19 @@ type GREEN = 'g';
 type BLACK = 'b';
 type WHITE = 'w';
 type COLORLESS = 'c';
+type GENERIC = '_';
 
 export type ManaColor = RED | BLUE | GREEN | BLACK | WHITE | COLORLESS;
+export type ManaColorOrGeneric = ManaColor | GENERIC;
 
 export type AnAmountOfEachMana = { [Color in ManaColor]: number };
 export type AnAmountOfMana = Partial<AnAmountOfEachMana>;
+export type AnAmountOfEachManaAndGeneric = AnAmountOfEachMana &
+  { [COLOR in GENERIC]: number };
+export type AnAmountOfManaOrGeneric = Partial<AnAmountOfEachManaAndGeneric>;
 
 export interface CardPrototype extends HasTypeInfo {
-  castingCost: AnAmountOfMana;
+  castingCost: AnAmountOfManaOrGeneric;
   name: string;
   abilities: Ability[];
   onResolve: CardLifetimeEventHandler;
@@ -235,7 +240,7 @@ export interface GameState {
   stack: Card[];
   graveyard: Card[];
   nextCardId: number;
-  owedMana: AnAmountOfMana;
+  owedMana: AnAmountOfManaOrGeneric;
   activatableCardIds: number[];
 }
 

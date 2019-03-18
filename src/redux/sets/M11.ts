@@ -2,7 +2,7 @@ import { CardPrototype, CardTypeInfo } from '../game-state/types';
 import { add } from '../util';
 
 export const pyreticRitual: CardPrototype = {
-  castingCost: { r: 1, c: 1 },
+  castingCost: { r: 1, _: 1 },
   abilities: [],
   onResolve: state => ({
     ...state,
