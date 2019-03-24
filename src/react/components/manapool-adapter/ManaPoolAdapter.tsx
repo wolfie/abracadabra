@@ -34,7 +34,7 @@ const ManaPoolAdapter: React.FunctionComponent<Props> = ({
   const owedExactly = fillManaObject(owed);
   const colorIsClickable = (colorKey: ManaColor) =>
     manaPoolExactly[colorKey] > 0 &&
-    (owedExactly.c > 0 || owedExactly[colorKey] > 0);
+    (owedExactly._ > 0 || owedExactly[colorKey] > 0);
   return (
     <div className={css('manapool', { highlighted: !isEmpty(owed) })}>
       {Object.entries(manaPool).map(([key_, mana]) => {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import {
-  AnAmountOfMana,
+  AnAmountOfManaOrGeneric,
   Card,
   GameState,
   GameStateActions
@@ -14,7 +14,7 @@ import { isEmpty } from '../../../redux/util';
 
 type StateProps = {
   stack: Card[];
-  owedMana: AnAmountOfMana;
+  owedMana: AnAmountOfManaOrGeneric;
 };
 type DispatchProps = { popStack: () => unknown };
 type Props = StateProps & DispatchProps;

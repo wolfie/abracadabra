@@ -46,19 +46,31 @@ export const fillManaObject: ManaFiller = (someMana: any): any => ({
   ...someMana
 });
 
-export const add = (
-  mana1: AnAmountOfMana,
-  mana2: AnAmountOfMana
-): AnAmountOfEachMana => {
+interface ManaAdder {
+  (
+    mana1: AnAmountOfMana,
+    mana2: AnAmountOfManaOrGeneric
+  ): AnAmountOfManaOrGeneric;
+  (
+    mana1: AnAmountOfManaOrGeneric,
+    mana2: AnAmountOfMana
+  ): AnAmountOfManaOrGeneric;
+  (mana1: AnAmountOfMana, mana2: AnAmountOfMana): AnAmountOfMana;
+}
+export const add: ManaAdder = (mana1: any, mana2: any) => {
   const filledMana1 = fillManaObject(mana1);
   const filledMana2 = fillManaObject(mana2);
+
+  const genericManaMaybe =
+    mana1._ || mana2._ ? { _: filledMana1._ + filledMana2._ } : {};
   return {
     g: filledMana1.g + filledMana2.g,
     r: filledMana1.r + filledMana2.r,
     b: filledMana1.b + filledMana2.b,
     u: filledMana1.u + filledMana2.u,
     w: filledMana1.w + filledMana2.w,
-    c: filledMana1.c + filledMana2.c
+    c: filledMana1.c + filledMana2.c,
+    ...genericManaMaybe
   };
 };
 
