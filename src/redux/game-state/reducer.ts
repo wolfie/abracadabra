@@ -1,6 +1,8 @@
 import { GameState, GameStateActions } from './types';
 import {
+  __HACK_SET_STATE_ACTION,
   ACTIVATE_ABILITY,
+  CANCEL_LAST_ACTION,
   CAST,
   MOVE_CARD_BETWEEN_ZONES,
   POP_STACK,
@@ -12,6 +14,7 @@ import castReducer from './reducers/cast';
 import popStackReducer from './reducers/pop-stack';
 import requestPaySingleManaCostReducer from './reducers/request-pay-single-mana-cost';
 import updateActivatableCardIdsReducer from './reducers/update-activatable-card-ids';
+import { restoreStateBackupRestore } from './reducers/state-memory-reducers';
 
 const gameStateReducer = (
   state = GameState.NULL,
@@ -46,6 +49,14 @@ const gameStateReducer = (
 
     case REQUEST_PAY_SINGLE_MANA_COST: {
       return requestPaySingleManaCostReducer(state, action.mana);
+    }
+
+    case CANCEL_LAST_ACTION: {
+      return restoreStateBackupRestore(state);
+    }
+
+    case __HACK_SET_STATE_ACTION: {
+      return action.state;
     }
 
     default:

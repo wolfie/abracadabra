@@ -9,19 +9,24 @@ import {
 import CardComponent from '../card-component/CardComponent';
 import CardstackComponent from '../card-stack-component/CardstackComponent';
 import { Dispatch } from 'redux';
-import { popStackAction } from '../../../redux/game-state/actions';
+import {
+  cancelLastActionAction,
+  popStackAction
+} from '../../../redux/game-state/actions';
 import { isEmpty } from '../../../redux/util';
 
 type StateProps = {
   stack: Card[];
   owedMana: AnAmountOfManaOrGeneric;
+  canCancelAction: boolean;
 };
-type DispatchProps = { popStack: () => unknown };
+type DispatchProps = { popStack: () => unknown; cancel: () => unknown };
 type Props = StateProps & DispatchProps;
 
 const StackAdapter: React.FunctionComponent<Props> = ({
   stack,
   popStack,
+  cancel,
   owedMana
 }) => {
   return stack.length > 0 ? (
@@ -43,19 +48,22 @@ const StackAdapter: React.FunctionComponent<Props> = ({
       ) : (
         <div>Can't resolve next on stack, pay mana cost first!</div>
       )}
+      {cancelAnimationFrame && <button onClick={cancel}>Cancel</button>}
     </>
   ) : null;
 };
 
 const mapStateToProps = (state: GameState): StateProps => ({
   stack: state.stack,
-  owedMana: state.owedMana
+  owedMana: state.owedMana,
+  canCancelAction: state.stateBackup !== undefined
 });
 
 const mapDispatchToProps = (
   dispatch: Dispatch<GameStateActions>
 ): DispatchProps => ({
-  popStack: () => dispatch(popStackAction())
+  popStack: () => dispatch(popStackAction()),
+  cancel: () => dispatch(cancelLastActionAction())
 });
 
 export default connect(

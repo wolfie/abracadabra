@@ -1,6 +1,7 @@
 import { Card, GameState, Zone } from '../types';
 import { add, isLand } from '../../util';
 import moveCardBetweenZonesReducer from './move-card-between-zones';
+import { backupStateReducer } from './state-memory-reducers';
 
 const castReducer = (state: GameState, card: Card) => {
   // Casting spells: https://www.yawgatog.com/resources/magic-rules/#R601
@@ -11,6 +12,9 @@ const castReducer = (state: GameState, card: Card) => {
 
     return moveCardBetweenZonesReducer(state, card, originZone, 'battlefield');
   } else {
+    // prepare for undo action
+    state = backupStateReducer(state);
+
     // Put card on stack https://www.yawgatog.com/resources/magic-rules/#R6012a
     state = moveCardBetweenZonesReducer(state, card, originZone, 'stack');
 

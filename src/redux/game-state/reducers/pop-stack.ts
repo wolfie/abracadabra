@@ -1,4 +1,5 @@
 import { GameState } from '../types';
+import { clearStateBackupReducer } from './state-memory-reducers';
 
 const popStackReducer = (state: GameState) => {
   const isNotLastelement = (_: unknown, i: number) =>
@@ -12,6 +13,7 @@ const popStackReducer = (state: GameState) => {
   const stackWithoutPoppedObject = state.stack.filter(isNotLastelement);
   state = { ...state, stack: stackWithoutPoppedObject };
   state = poppedStackObject.onResolve(state);
+  state = clearStateBackupReducer(state);
   return state;
 };
 

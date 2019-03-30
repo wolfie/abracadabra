@@ -1,6 +1,8 @@
-import { Card, GameStateActions, ManaColor, Zone } from './types';
+import { Card, GameState, GameStateActions, ManaColor, Zone } from './types';
 import {
+  __HACK_SET_STATE_ACTION,
   ACTIVATE_ABILITY,
+  CANCEL_LAST_ACTION,
   CAST,
   MOVE_CARD_BETWEEN_ZONES,
   POP_STACK,
@@ -41,4 +43,13 @@ export const requestPaySingleManaCostAction = (
 ): GameStateActions => ({
   type: REQUEST_PAY_SINGLE_MANA_COST,
   mana
+});
+
+export const cancelLastActionAction = (): GameStateActions => ({
+  type: CANCEL_LAST_ACTION
+});
+
+export const __hackSetStateAction = (state: GameState): GameStateActions => ({
+  type: __HACK_SET_STATE_ACTION,
+  state
 });

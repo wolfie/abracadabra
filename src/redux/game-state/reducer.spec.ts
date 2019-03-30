@@ -1,7 +1,8 @@
 import {
   castAction,
   moveCardBetweenZonesAction,
-  popStackAction
+  popStackAction,
+  __hackSetStateAction
 } from './actions';
 import * as M11 from '../sets/M11';
 import * as A25 from '../sets/A25';
@@ -106,10 +107,17 @@ describe('gameStateReducer', () => {
     });
 
     it("should call onResolve on a card that's on the stack", () => {
-      const onResolve = jest.fn();
-      onResolve.mockImplementation(state => state);
+      const onResolve = jest.fn(state => state);
       const card = { ...Card.NULL, onResolve };
       store.dispatch(moveCardBetweenZonesAction(card, null, 'stack'));
+
+      // popping the state requires a state backup to be present.
+      store.dispatch(
+        __hackSetStateAction({
+          ...store.getState(),
+          stateBackup: GameState.NULL
+        })
+      );
 
       store.dispatch(popStackAction());
       expect(onResolve).toHaveBeenCalled();

@@ -242,6 +242,7 @@ export interface GameState {
   nextCardId: number;
   owedMana: AnAmountOfManaOrGeneric;
   activatableCardIds: number[];
+  stateBackup?: GameState;
 }
 
 export namespace GameState {
@@ -291,9 +292,23 @@ interface RequestPaySingleManaCostAction {
   mana: ManaColor;
 }
 
+export const CANCEL_LAST_ACTION = 'CANCEL_LAST_ACTION';
+interface CancelLastActionAction {
+  type: typeof CANCEL_LAST_ACTION;
+}
+
+export const __HACK_SET_STATE_ACTION = '__HACK_SET_STATE_ACTION';
+// tslint:disable-next-line: class-name
+interface __HackSetStateAction {
+  type: typeof __HACK_SET_STATE_ACTION;
+  state: GameState;
+}
+
 export type GameStateActions =
   | ActivateAbilityAction
   | MoveCardBetweenZonesAction
   | CastAction
   | PopStackAction
-  | RequestPaySingleManaCostAction;
+  | RequestPaySingleManaCostAction
+  | CancelLastActionAction
+  | __HackSetStateAction;
