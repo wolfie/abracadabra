@@ -1,126 +1,88 @@
-import {
-  castAction,
-  moveCardBetweenZonesAction,
-  popStackAction,
-  __hackSetStateAction
-} from './actions';
+import { __hackSetStateAction } from './actions';
 import * as M11 from '../sets/M11';
 import * as A25 from '../sets/A25';
 import * as M20 from '../sets/M20';
-import { Card, GameState, GameStateActions, Zone } from './types';
-import 'jest';
-import { createStore, Store as ReduxStore } from 'redux';
+import { Card, GameState, Zone } from './types';
 import { isEmpty, isLand } from '../util';
-import gameStateReducer from './reducer';
-
-type Store = ReduxStore<GameState, GameStateActions>;
+import moveCardBetweenZonesReducer from './reducers/move-card-between-zones';
+import castReducer from './reducers/cast';
 
 describe('moveCardBetweenZonesReducer', () => {
   const card = Card.from(M20.swamp, 0);
-  let store: Store;
+  let state: GameState;
 
   beforeEach(() => {
-    store = createStore(gameStateReducer);
+    state = GameState.NULL;
   });
 
   it('should add to and remove from hand', () => {
-    expect(() => Zone.find(card, store.getState())).toThrow();
+    expect(() => Zone.find(card, state)).toThrow();
 
-    store.dispatch(moveCardBetweenZonesAction(card, null, 'hand'));
-    expect(Zone.find(card, store.getState())).toBe('hand');
+    state = moveCardBetweenZonesReducer(state, card, null, 'hand');
+    expect(Zone.find(card, state)).toBe('hand');
 
-    store.dispatch(moveCardBetweenZonesAction(card, 'hand', null));
-    expect(() => Zone.find(card, store.getState())).toThrow();
+    state = moveCardBetweenZonesReducer(state, card, 'hand', null);
+    expect(() => Zone.find(card, state)).toThrow();
   });
 
   it('should add to and remove from battlefield', () => {
-    expect(() => Zone.find(card, store.getState())).toThrow();
+    expect(() => Zone.find(card, state)).toThrow();
 
-    store.dispatch(moveCardBetweenZonesAction(card, null, 'battlefield'));
-    expect(Zone.find(card, store.getState())).toBe('battlefield');
+    state = moveCardBetweenZonesReducer(state, card, null, 'battlefield');
+    expect(Zone.find(card, state)).toBe('battlefield');
 
-    store.dispatch(moveCardBetweenZonesAction(card, 'battlefield', null));
-    expect(() => Zone.find(card, store.getState())).toThrow();
+    state = moveCardBetweenZonesReducer(state, card, 'battlefield', null);
+    expect(() => Zone.find(card, state)).toThrow();
   });
 
   it('should add to and remove from stack', () => {
-    expect(() => Zone.find(card, store.getState())).toThrow();
+    expect(() => Zone.find(card, state)).toThrow();
 
-    store.dispatch(moveCardBetweenZonesAction(card, null, 'stack'));
-    expect(Zone.find(card, store.getState())).toBe('stack');
+    state = moveCardBetweenZonesReducer(state, card, null, 'stack');
+    expect(Zone.find(card, state)).toBe('stack');
 
-    store.dispatch(moveCardBetweenZonesAction(card, 'stack', null));
-    expect(() => Zone.find(card, store.getState())).toThrow();
+    state = moveCardBetweenZonesReducer(state, card, 'stack', null);
+    expect(() => Zone.find(card, state)).toThrow();
   });
 });
 
 describe('gameStateReducer', () => {
   describe('castAction', () => {
-    let store: Store;
+    let state: GameState;
     beforeEach(() => {
-      store = createStore(gameStateReducer);
+      state = GameState.NULL;
     });
 
     it('should cast a land directly on the battlefield', () => {
       const mountain = Card.from(M20.mountain, 0);
       expect(isLand(mountain)).toBeTruthy();
-      store.dispatch(moveCardBetweenZonesAction(mountain, null, 'hand'));
+      state = moveCardBetweenZonesReducer(state, mountain, null, 'hand');
 
-      store.dispatch(castAction(mountain));
+      state = castReducer(state, mountain);
 
-      expect(Zone.find(mountain, store.getState())).toBe('battlefield');
+      expect(Zone.find(mountain, state)).toBe('battlefield');
     });
 
     it('should place a zero-costing non-land card on the stack', () => {
       const ornithopter = Card.from(M11.ornithopter, 0);
       expect(isEmpty(ornithopter.castingCost)).toBeTruthy();
-      store.dispatch(moveCardBetweenZonesAction(ornithopter, null, 'hand'));
+      state = moveCardBetweenZonesReducer(state, ornithopter, null, 'hand');
 
-      store.dispatch(castAction(ornithopter));
+      state = castReducer(state, ornithopter);
 
-      expect(Zone.find(ornithopter, store.getState())).toBe('stack');
-      expect(isEmpty(store.getState().owedMana)).toBeTruthy();
+      expect(Zone.find(ornithopter, state)).toBe('stack');
+      expect(isEmpty(state.owedMana)).toBeTruthy();
     });
 
     it('should require payment for a non-free card', () => {
       const darkRitual = Card.from(A25.darkRitual, 0);
       expect(isEmpty(darkRitual.castingCost)).toBeFalsy();
-      store.dispatch(moveCardBetweenZonesAction(darkRitual, null, 'hand'));
+      state = moveCardBetweenZonesReducer(state, darkRitual, null, 'hand');
 
-      store.dispatch(castAction(darkRitual));
+      state = castReducer(state, darkRitual);
 
-      expect(Zone.find(darkRitual, store.getState())).toBe('stack');
-      expect(isEmpty(store.getState().owedMana)).toBeFalsy();
-    });
-  });
-
-  describe('popStackAction', () => {
-    let store: Store;
-
-    beforeEach(() => {
-      store = createStore(gameStateReducer);
-    });
-
-    it('should throw if the stack is empty', () => {
-      expect(store.getState().stack).toHaveLength(0);
-      expect(() => store.dispatch(popStackAction())).toThrow();
-    });
-
-    it("should call onResolve on a card that's on the stack", () => {
-      const onResolve = jest.fn(state => state);
-      const card = { ...Card.NULL, onResolve };
-      store.dispatch(moveCardBetweenZonesAction(card, null, 'stack'));
-
-      // popping the state requires a state backup to be present.
-      store.dispatch(
-        __hackSetStateAction({
-          ...store.getState(),
-          stateBackup: GameState.NULL
-        })
-      );
-
-      store.dispatch(popStackAction());
-      expect(onResolve).toHaveBeenCalled();
+      expect(Zone.find(darkRitual, state)).toBe('stack');
+      expect(isEmpty(state.owedMana)).toBeFalsy();
     });
   });
 });

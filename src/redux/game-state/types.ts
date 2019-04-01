@@ -1,15 +1,16 @@
 import { any, map, pipe } from 'ramda';
 import { assert } from '../util';
+import { identity } from 'ramda';
 
 export namespace ManaPool {
-  export const NULL: AnAmountOfEachMana = {
+  export const NULL: AnAmountOfEachMana = Object.freeze({
     r: 0,
     g: 0,
     b: 0,
     u: 0,
     w: 0,
     c: 0
-  };
+  });
 }
 
 export type CardSuperType = 'basic';
@@ -41,7 +42,7 @@ export namespace CardTypeInfo {
 export type CardLifetimeEventHandler = (state: GameState) => GameState;
 
 export namespace CardLifetimeEventHandler {
-  export const NULL: CardLifetimeEventHandler = state => state;
+  export const NULL: CardLifetimeEventHandler = Object.freeze(identity);
 }
 
 export interface HasTypeInfo {
@@ -74,13 +75,13 @@ export interface CardPrototype extends HasTypeInfo {
 }
 
 export namespace CardPrototype {
-  export const NULL: CardPrototype = {
+  export const NULL: CardPrototype = Object.freeze({
     castingCost: {},
     name: '',
     abilities: [],
     typeInfo: { types: [] },
-    onResolve: state => state
-  };
+    onResolve: CardLifetimeEventHandler.NULL
+  });
 }
 
 export interface Card extends CardPrototype {
@@ -93,7 +94,7 @@ export namespace Card {
     id
   });
 
-  export const NULL = Card.from(CardPrototype.NULL, 0);
+  export const NULL = Object.freeze(Card.from(CardPrototype.NULL, 0));
 
   export const getColor = (card: Card): ManaColor[] => {
     const result = (Object.entries(card.castingCost) as Array<
@@ -121,7 +122,7 @@ export namespace Permanent {
   export const matches = (card: Card | CardPrototype): card is Permanent =>
     (card as any).isTapped !== undefined;
 
-  export const NULL: Permanent = Permanent.from(Card.NULL);
+  export const NULL: Permanent = Object.freeze(Permanent.from(Card.NULL));
 }
 
 export type ActivationCost = AnAmountOfMana & {
@@ -129,10 +130,10 @@ export type ActivationCost = AnAmountOfMana & {
 };
 
 export namespace ActivationCost {
-  export const NULL: ActivationCost = {
+  export const NULL: ActivationCost = Object.freeze({
     ...ManaPool.NULL,
     tapSelf: false
-  };
+  });
 }
 
 type EffectSpeed = 'mana' | 'instant' | 'sorcery';
@@ -246,7 +247,7 @@ export interface GameState {
 }
 
 export namespace GameState {
-  export const NULL: GameState = {
+  export const NULL: GameState = Object.freeze({
     manaPool: ManaPool.NULL,
     board: [],
     graveyard: [],
@@ -257,7 +258,7 @@ export namespace GameState {
     nextCardId: 0,
     owedMana: {},
     activatableCardIds: []
-  };
+  });
 }
 
 export const ACTIVATE_ABILITY = 'ACTIVATE_ABILITY';

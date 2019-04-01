@@ -1,53 +1,58 @@
-import gameStateReducer from '../reducer';
-import { createStore, Store as ReduxStore } from 'redux';
-import { GameState, GameStateActions } from '../types';
-import { requestPaySingleManaCostAction } from '../actions';
+import { GameState } from '../types';
+import requestPaySingleManaCostReducer from './request-pay-single-mana-cost';
 import { isEmpty } from '../../util';
 
-type Store = ReduxStore<GameState, GameStateActions>;
-
 describe('requestPaySingleManaCostReducer', () => {
-  let store: Store;
+  let state: GameState;
   beforeEach(() => {
-    store = createStore(gameStateReducer);
+    state = GameState.NULL;
   });
 
   it('should pay off a black mana with a black mana', () => {
-    store.getState().manaPool = { b: 1 };
-    store.getState().owedMana = { b: 1 };
+    state = {
+      ...state,
+      manaPool: { b: 1 },
+      owedMana: { b: 1 }
+    };
 
-    expect(isEmpty(store.getState().manaPool)).toBeFalsy();
-    expect(isEmpty(store.getState().owedMana)).toBeFalsy();
+    expect(isEmpty(state.manaPool)).toBeFalsy();
+    expect(isEmpty(state.owedMana)).toBeFalsy();
 
-    store.dispatch(requestPaySingleManaCostAction('b'));
+    state = requestPaySingleManaCostReducer(state, 'b');
 
-    expect(isEmpty(store.getState().manaPool)).toBeTruthy();
-    expect(isEmpty(store.getState().owedMana)).toBeTruthy();
+    expect(isEmpty(state.manaPool)).toBeTruthy();
+    expect(isEmpty(state.owedMana)).toBeTruthy();
   });
 
   it('should pay off a generic mana with a black mana', () => {
-    store.getState().manaPool = { b: 1 };
-    store.getState().owedMana = { _: 1 };
+    state = {
+      ...state,
+      manaPool: { b: 1 },
+      owedMana: { _: 1 }
+    };
 
-    expect(isEmpty(store.getState().manaPool)).toBeFalsy();
-    expect(isEmpty(store.getState().owedMana)).toBeFalsy();
+    expect(isEmpty(state.manaPool)).toBeFalsy();
+    expect(isEmpty(state.owedMana)).toBeFalsy();
 
-    store.dispatch(requestPaySingleManaCostAction('b'));
+    state = requestPaySingleManaCostReducer(state, 'b');
 
-    expect(isEmpty(store.getState().manaPool)).toBeTruthy();
-    expect(isEmpty(store.getState().owedMana)).toBeTruthy();
+    expect(isEmpty(state.manaPool)).toBeTruthy();
+    expect(isEmpty(state.owedMana)).toBeTruthy();
   });
 
   it('should NOT pay off a colorless mana with a black mana', () => {
-    store.getState().manaPool = { b: 1 };
-    store.getState().owedMana = { c: 1 };
+    state = {
+      ...state,
+      manaPool: { b: 1 },
+      owedMana: { c: 1 }
+    };
 
-    expect(isEmpty(store.getState().manaPool)).toBeFalsy();
-    expect(isEmpty(store.getState().owedMana)).toBeFalsy();
+    expect(isEmpty(state.manaPool)).toBeFalsy();
+    expect(isEmpty(state.owedMana)).toBeFalsy();
 
-    store.dispatch(requestPaySingleManaCostAction('b'));
+    state = requestPaySingleManaCostReducer(state, 'b');
 
-    expect(isEmpty(store.getState().manaPool)).toBeFalsy();
-    expect(isEmpty(store.getState().owedMana)).toBeFalsy();
+    expect(isEmpty(state.manaPool)).toBeFalsy();
+    expect(isEmpty(state.owedMana)).toBeFalsy();
   });
 });
