@@ -2,7 +2,7 @@ import { Card, GameState, GameStateActions, ManaColor, Zone } from './types';
 import {
   __HACK_SET_STATE_ACTION,
   ACTIVATE_ABILITY,
-  ADVANCE_PHASE_ACTION,
+  ADVANCE_STEP_ACTION,
   CANCEL_LAST_ACTION,
   CAST,
   MOVE_CARD_BETWEEN_ZONES,
@@ -51,7 +51,7 @@ export const cancelLastActionAction = (): GameStateActions => ({
 });
 
 export const advancePhaseAction = (): GameStateActions => ({
-  type: ADVANCE_PHASE_ACTION
+  type: ADVANCE_STEP_ACTION
 });
 
 export const __hackSetStateAction = (state: GameState): GameStateActions => ({

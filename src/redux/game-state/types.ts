@@ -243,7 +243,7 @@ export interface GameState {
   nextCardId: number;
   owedMana: AnAmountOfManaOrGeneric;
   activatableCardIds: number[];
-  currentPhase: number;
+  currentStep: number;
   stateBackup?: GameState;
 }
 
@@ -259,7 +259,7 @@ export namespace GameState {
     nextCardId: 0,
     owedMana: {},
     activatableCardIds: [],
-    currentPhase: 0
+    currentStep: 0
   });
 }
 
@@ -300,9 +300,9 @@ interface CancelLastActionAction {
   type: typeof CANCEL_LAST_ACTION;
 }
 
-export const ADVANCE_PHASE_ACTION = 'ADVANCE_PHASE_ACTION';
+export const ADVANCE_STEP_ACTION = 'ADVANCE_STEP_ACTION';
 interface AdvancePhaseAction {
-  type: typeof ADVANCE_PHASE_ACTION;
+  type: typeof ADVANCE_STEP_ACTION;
 }
 
 export const __HACK_SET_STATE_ACTION = '__HACK_SET_STATE_ACTION';

@@ -1,39 +1,57 @@
 // This could probably be replaced with Reselect (https://github.com/reduxjs/reselect) or similar
 
-const phaseInfo = (phaseIndex: number) => {
-  const EQ = (n: number): boolean => phaseIndex === n;
-  const GE = (n: number): boolean => phaseIndex >= n;
-  const LE = (n: number): boolean => phaseIndex <= n;
+const BEGINNING = 0;
+const MAIN_PRE = 1;
+const COMBAT = 2;
+const MAIN_POST = 3;
+const ENDING = 4;
+
+const getPhaseIndex = (stepIndex: number) =>
+  stepIndex < 3
+    ? BEGINNING
+    : stepIndex < 4
+    ? MAIN_PRE
+    : stepIndex < 10
+    ? COMBAT
+    : stepIndex < 11
+    ? MAIN_POST
+    : ENDING;
+
+const stepInfo = (stepIndex: number) => {
+  const _ = (n: number): boolean => stepIndex === n;
+
+  const phaseIndex = getPhaseIndex(stepIndex);
 
   return {
-    index: phaseIndex,
+    stepIndex,
+    phaseIndex,
 
-    isUntapStep: EQ(0),
-    isUpkeepStep: EQ(1),
-    isDrawStep: EQ(2),
+    isUntapStep: _(0),
+    isUpkeepStep: _(1),
+    isDrawStep: _(2),
 
-    isPreCombatMain: EQ(3),
+    isPreCombatMain: _(3),
 
-    isCombatBeginningStep: EQ(4),
-    isCombatDeclareAttackersStep: EQ(5),
-    isCombatDeclareBlockersStep: EQ(6),
-    isCombatDamageFirstAndDoubleStrikeStep: EQ(7),
-    isCombatDamageMainStep: EQ(8),
-    isCombatEndStep: EQ(9),
+    isCombatBeginningStep: _(4),
+    isCombatDeclareAttackersStep: _(5),
+    isCombatDeclareBlockersStep: _(6),
+    isCombatDamageFirstAndDoubleStrikeStep: _(7),
+    isCombatDamageMainStep: _(8),
+    isCombatEndStep: _(9),
 
-    isPostCombatMain: EQ(10),
+    isPostCombatMain: _(10),
 
-    isEndOfTurnStep: EQ(11),
-    isCleanupStep: EQ(12),
+    isEndOfTurnStep: _(11),
+    isCleanupStep: _(12),
 
-    isBeginningPhase: LE(2),
-    isMainPhase: EQ(3) || EQ(10),
-    isMainStep: EQ(3) || EQ(10),
-    isCombatPhase: GE(4) && LE(9),
-    isEndingPhase: GE(11)
+    isBeginningPhase: phaseIndex === BEGINNING,
+    isMainPhase: phaseIndex === MAIN_PRE || phaseIndex === MAIN_POST,
+    isMainStep: phaseIndex === MAIN_PRE || phaseIndex === MAIN_POST,
+    isCombatPhase: phaseIndex === COMBAT,
+    isEndingPhase: phaseIndex === ENDING
   };
 };
 
-export type PhaseInfo = ReturnType<typeof phaseInfo>;
+export type StepInfo = ReturnType<typeof stepInfo>;
 
-export default phaseInfo;
+export default stepInfo;
