@@ -13,6 +13,11 @@ const emptyManaPoolReducer = (state: GameState): GameState => ({
   manaPool: ManaPool.NULL
 });
 
+const resetLandsPlayedReducer = (state: GameState): GameState => ({
+  ...state,
+  landsPlayed: 0
+});
+
 const advanceStepReducer = (prevState: GameState): GameState => {
   let nextState: GameState = {
     ...prevState,
@@ -23,6 +28,7 @@ const advanceStepReducer = (prevState: GameState): GameState => {
   const nextPhaseInfo = getStepInfo(nextState.currentStep);
   const phaseHasChanged = prevPhaseInfo.phaseIndex !== nextPhaseInfo.phaseIndex;
   if (phaseHasChanged) nextState = emptyManaPoolReducer(nextState);
+  if (nextPhaseInfo.isUntapStep) nextState = resetLandsPlayedReducer(nextState);
   if (nextPhaseInfo.isUntapStep) nextState = untapPermanentsReducer(nextState);
 
   return nextState;

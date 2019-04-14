@@ -244,6 +244,7 @@ export interface GameState {
   owedMana: AnAmountOfManaOrGeneric;
   activatableCardIds: number[];
   currentStep: number;
+  landsPlayed: number;
   stateBackup?: GameState;
 }
 
@@ -259,7 +260,8 @@ export namespace GameState {
     nextCardId: 0,
     owedMana: {},
     activatableCardIds: [],
-    currentStep: 0
+    currentStep: 0,
+    landsPlayed: 0
   });
 }
 

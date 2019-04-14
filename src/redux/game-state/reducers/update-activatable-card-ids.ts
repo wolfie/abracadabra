@@ -1,6 +1,7 @@
 import { Card, GameState, Zone } from '../types';
-import { canProvideManaNow, isEmpty, isInstant } from '../../util';
-import { map, pipe, uniq } from 'ramda';
+import { canProvideManaNow, isEmpty, isInstant, isLand } from '../../util';
+import { map, pipe, reject, uniq } from 'ramda';
+import getStepInfo, { StepInfo } from '../transformers/phase-transformer';
 
 const cardToId = (card: Card) => card.id;
 
@@ -18,17 +19,25 @@ const whenStackIsPopulatedAndNothingIsOwed = (state: GameState): Card[] =>
       ]
     : [];
 
-const whenStackIsEmpty = (state: GameState): Card[] =>
-  state.stack.length === 0 ? [...Zone.toCardArray('hand', state)] : [];
+const sorcerySpeedHandCards = (state: GameState, stepInfo: StepInfo): Card[] =>
+  stepInfo.isMainPhase && state.stack.length === 0
+    ? [...Zone.toCardArray('hand', state)]
+    : [];
 
 const whenManaOwed = (state: GameState): Card[] =>
   !isEmpty(state.owedMana) ? findManaSourcesIn('battlefield', state) : [];
 
-const findActivatables = (state: GameState): Card[] => [
-  ...whenManaOwed(state),
-  ...whenStackIsEmpty(state),
-  ...whenStackIsPopulatedAndNothingIsOwed(state)
-];
+const landHasBeenPlayedAndThisIsALand = (state: GameState) => (card: Card) =>
+  state.landsPlayed > 0 && isLand(card);
+
+const findActivatables = (state: GameState): Card[] => {
+  const stepInfo = getStepInfo(state.currentStep);
+  return reject(landHasBeenPlayedAndThisIsALand(state))([
+    ...whenManaOwed(state),
+    ...sorcerySpeedHandCards(state, stepInfo),
+    ...whenStackIsPopulatedAndNothingIsOwed(state)
+  ]);
+};
 
 const findActivatableCardIdsDuringState = pipe(
   findActivatables,

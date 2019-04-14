@@ -3,6 +3,11 @@ import { add, isLand } from '../../util';
 import moveCardBetweenZonesReducer from './move-card-between-zones';
 import { backupStateReducer } from './state-memory-reducers';
 
+const incrementLandsPlayedCounter = (state: GameState): GameState => ({
+  ...state,
+  landsPlayed: state.landsPlayed + 1
+});
+
 const castReducer = (state: GameState, card: Card) => {
   // Casting spells: https://www.yawgatog.com/resources/magic-rules/#R601
 
@@ -10,7 +15,9 @@ const castReducer = (state: GameState, card: Card) => {
   if (isLand(card)) {
     // Special action, playing a land: https://www.yawgatog.com/resources/magic-rules/#R1152a
 
-    return moveCardBetweenZonesReducer(state, card, originZone, 'battlefield');
+    state = moveCardBetweenZonesReducer(state, card, originZone, 'battlefield');
+    state = incrementLandsPlayedCounter(state);
+    return state;
   } else {
     // prepare for undo action
     state = backupStateReducer(state);
