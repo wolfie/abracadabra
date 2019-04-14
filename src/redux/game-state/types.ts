@@ -243,6 +243,7 @@ export interface GameState {
   nextCardId: number;
   owedMana: AnAmountOfManaOrGeneric;
   activatableCardIds: number[];
+  currentPhase: number;
   stateBackup?: GameState;
 }
 
@@ -257,7 +258,8 @@ export namespace GameState {
     health: 20,
     nextCardId: 0,
     owedMana: {},
-    activatableCardIds: []
+    activatableCardIds: [],
+    currentPhase: 0
   });
 }
 
@@ -298,6 +300,11 @@ interface CancelLastActionAction {
   type: typeof CANCEL_LAST_ACTION;
 }
 
+export const ADVANCE_PHASE_ACTION = 'ADVANCE_PHASE_ACTION';
+interface AdvancePhaseAction {
+  type: typeof ADVANCE_PHASE_ACTION;
+}
+
 export const __HACK_SET_STATE_ACTION = '__HACK_SET_STATE_ACTION';
 // tslint:disable-next-line: class-name
 interface __HackSetStateAction {
@@ -312,4 +319,5 @@ export type GameStateActions =
   | PopStackAction
   | RequestPaySingleManaCostAction
   | CancelLastActionAction
+  | AdvancePhaseAction
   | __HackSetStateAction;

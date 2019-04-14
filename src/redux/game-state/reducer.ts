@@ -2,6 +2,7 @@ import { GameState, GameStateActions } from './types';
 import {
   __HACK_SET_STATE_ACTION,
   ACTIVATE_ABILITY,
+  ADVANCE_PHASE_ACTION,
   CANCEL_LAST_ACTION,
   CAST,
   MOVE_CARD_BETWEEN_ZONES,
@@ -15,6 +16,7 @@ import popStackReducer from './reducers/pop-stack';
 import requestPaySingleManaCostReducer from './reducers/request-pay-single-mana-cost';
 import updateActivatableCardIdsReducer from './reducers/update-activatable-card-ids';
 import { restoreStateBackupRestore } from './reducers/state-memory-reducers';
+import advancePhaseReducer from './reducers/advance-phase-reducer';
 
 const gameStateReducer = (
   state = GameState.NULL,
@@ -53,6 +55,10 @@ const gameStateReducer = (
 
     case CANCEL_LAST_ACTION: {
       return restoreStateBackupRestore(state);
+    }
+
+    case ADVANCE_PHASE_ACTION: {
+      return advancePhaseReducer(state);
     }
 
     case __HACK_SET_STATE_ACTION: {
