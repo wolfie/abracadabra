@@ -13,6 +13,7 @@ const css = classnames.bind(styles);
 type StateProps = {
   phaseInfo: StepInfo;
   canEnterCombat: boolean;
+  canChangePhase: boolean;
 };
 
 type DispatchProps = {
@@ -92,12 +93,15 @@ const PhaseBase: IPhaseBase = (currentStepIndex, currentPhaseIndex) => ({
 const PhaseAdapter: React.FunctionComponent<Props> = ({
   phaseInfo,
   advancePhase,
-  canEnterCombat
+  canEnterCombat,
+  canChangePhase
 }) => {
   const Phase = PhaseBase(phaseInfo.stepIndex, phaseInfo.phaseIndex);
   return (
     <div>
-      <button onClick={advancePhase}>Next phase</button>
+      <button onClick={advancePhase} disabled={!canChangePhase}>
+        Next phase
+      </button>
       <Phase
         name="beginning"
         phaseEntry={stepStructure.beginning}
@@ -130,6 +134,7 @@ const PhaseAdapter: React.FunctionComponent<Props> = ({
 };
 
 const mapStateToProps = (state: GameState): StateProps => ({
+  canChangePhase: state.stack.length === 0,
   canEnterCombat: hasCreaturesToAttackWith(state),
   phaseInfo: getPhaseInfo(state.currentStep)
 });

@@ -24,6 +24,11 @@ describe('advance-step-reducer', () => {
     expect(state.currentStep).toBe(startStep + 1);
   });
 
+  it('should not allow to advance steps while things are in stack', () => {
+    state = { ...state, stack: [ornithopterPermanent] };
+    expect(() => advanceStepReducer(state)).toThrowError();
+  });
+
   it('should go to untap phase after the cleanup step', () => {
     state = { ...state, currentStep: CLEANUP_STEP };
     state = advanceStepReducer(state);

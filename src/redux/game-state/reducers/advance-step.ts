@@ -4,6 +4,7 @@ import {
   hasCreaturesDeclaredToAttach,
   hasCreaturesToAttackWith
 } from '../selectors';
+import { assert } from '../../util';
 
 const END_STEP = 11;
 
@@ -47,6 +48,8 @@ const removeSummoningSicknessReducer = (state: GameState): GameState => ({
 });
 
 const advanceStepReducer = (prevState: GameState): GameState => {
+  assert(() => prevState.stack.length === 0);
+
   const stepInfo = getStepInfo(prevState.currentStep);
 
   const nextState: GameState = {
