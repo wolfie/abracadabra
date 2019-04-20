@@ -1,6 +1,6 @@
 import { any, map, pipe } from 'ramda';
 import { assert } from '../util';
-import { identity } from 'ramda';
+import moveCardBetweenZonesReducer from './reducers/move-card-between-zones';
 
 export namespace ManaPool {
   export const NULL: AnAmountOfEachMana = Object.freeze({
@@ -39,10 +39,13 @@ export namespace CardTypeInfo {
   export const Instant: CardTypeInfo = { types: ['instant'] };
 }
 
-export type CardLifetimeEventHandler = (state: GameState) => GameState;
+export type CardLifetimeEventHandler = (
+  state: GameState,
+  self: Card
+) => GameState;
 
 export namespace CardLifetimeEventHandler {
-  export const NULL: CardLifetimeEventHandler = Object.freeze(identity);
+  export const NULL: CardLifetimeEventHandler = state => state;
 }
 
 export interface HasTypeInfo {
@@ -66,32 +69,44 @@ export type AnAmountOfEachManaAndGeneric = AnAmountOfEachMana &
   { [COLOR in GENERIC]: number };
 export type AnAmountOfManaOrGeneric = Partial<AnAmountOfEachManaAndGeneric>;
 
-export interface CardPrototype extends HasTypeInfo {
+type StaticAbility = 'flying';
+
+export type CardPrototype = HasTypeInfo & {
   castingCost: AnAmountOfManaOrGeneric;
   name: string;
-  abilities: Ability[];
+  activatedAbilities: ActivatedAbility[];
+  staticAbilities: StaticAbility[];
   onResolve: CardLifetimeEventHandler;
   canProvideManaNow?: (state: GameState, self: Card) => boolean;
-}
+} & ({} | { power: number; toughness: number });
 
 export namespace CardPrototype {
   export const NULL: CardPrototype = Object.freeze({
     castingCost: {},
     name: '',
-    abilities: [],
+    activatedAbilities: [],
+    staticAbilities: [],
     typeInfo: { types: [] },
     onResolve: CardLifetimeEventHandler.NULL
   });
+
+  export const NULL_PERMANENT: CardPrototype = {
+    ...CardPrototype.NULL,
+    onResolve: (state, self) =>
+      moveCardBetweenZonesReducer(state, self, 'stack', 'battlefield')
+  };
 }
 
-export interface Card extends CardPrototype {
+export type Card = CardPrototype & {
   id: number;
-}
+  wasCastSinceLastStartOfTurn: boolean;
+};
 
 export namespace Card {
   export const from = (p: CardPrototype, id: number): Card => ({
     ...p,
-    id
+    id,
+    wasCastSinceLastStartOfTurn: true
   });
 
   export const NULL = Object.freeze(Card.from(CardPrototype.NULL, 0));
@@ -138,12 +153,12 @@ export namespace ActivationCost {
 
 type EffectSpeed = 'mana' | 'instant' | 'sorcery';
 
-export interface ManaAbility extends Ability {
+export interface ManaAbility extends ActivatedAbility {
   isManaAbility: true;
   effect: () => AnAmountOfMana;
 }
 
-export interface Ability {
+export interface ActivatedAbility {
   speed: EffectSpeed;
 
   /**
@@ -166,10 +181,11 @@ export interface Ability {
 }
 
 export namespace Ability {
-  export const isManaAbility = (ability: Ability): ability is ManaAbility =>
-    ability.isManaAbility;
+  export const isManaAbility = (
+    ability: ActivatedAbility
+  ): ability is ManaAbility => ability.isManaAbility;
 
-  export const Empty: Ability = {
+  export const Empty: ActivatedAbility = {
     speed: 'instant',
     isManaAbility: false,
     usesStack: true,
@@ -190,14 +206,15 @@ export namespace Ability {
   export const TapForBlackMana = Ability.getManaAbility({ b: 1 });
   export const TapForRedMana = Ability.getManaAbility({ r: 1 });
 
-  const isLegalAbilityFor = (permanent: Permanent) => (ability: Ability) =>
-    !ability.cost.tapSelf || !permanent.isTapped;
+  const isLegalAbilityFor = (permanent: Permanent) => (
+    ability: ActivatedAbility
+  ) => !ability.cost.tapSelf || !permanent.isTapped;
 
   export const hasLegalAbilities = (permanent: Permanent): boolean =>
     pipe(
       map(isLegalAbilityFor(permanent)),
       any(result => result)
-    )(permanent.abilities);
+    )(permanent.activatedAbilities);
 }
 
 export type Zone = 'hand' | 'battlefield' | 'stack' | null;

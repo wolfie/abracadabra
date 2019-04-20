@@ -23,7 +23,7 @@ const PermanentAdapter: React.FunctionComponent<Props> = ({
   const isClickable = Ability.hasLegalAbilities(permanent);
 
   const chooseAbility = () => {
-    switch (permanent.abilities.length) {
+    switch (permanent.activatedAbilities.length) {
       case 0:
         return;
       case 1:

@@ -1,4 +1,10 @@
-import { Ability, GameState, ManaAbility, Permanent } from '../types';
+import {
+  Ability,
+  ActivatedAbility,
+  GameState,
+  ManaAbility,
+  Permanent
+} from '../types';
 import { add, findPermanent } from '../../util';
 
 const tapPermanent = (
@@ -20,11 +26,14 @@ function gainMana(state: GameState, ability: ManaAbility): GameState {
 const payPossibleSelfTapReducer = (
   state: GameState,
   permanent: Permanent,
-  ability: Ability
+  ability: ActivatedAbility
 ): GameState =>
   ability.cost.tapSelf ? tapPermanent(state, permanent.id) : state;
 
-const possiblyGainMana = (state: GameState, ability: Ability): GameState =>
+const possiblyGainMana = (
+  state: GameState,
+  ability: ActivatedAbility
+): GameState =>
   Ability.isManaAbility(ability) ? gainMana(state, ability) : state;
 
 const activateAbilityReducer = (
@@ -33,7 +42,7 @@ const activateAbilityReducer = (
   abilityId: number
 ): GameState => {
   const activatedPermanent = findPermanent(state, permanentId);
-  const activatedAbility = activatedPermanent.abilities[abilityId];
+  const activatedAbility = activatedPermanent.activatedAbilities[abilityId];
 
   if (!activatedAbility.usesStack) {
     state = payPossibleSelfTapReducer(

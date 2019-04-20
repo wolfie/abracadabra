@@ -10,7 +10,7 @@ const popStackReducer = (state: GameState) => {
   const stackWithoutPoppedObject = init(state.stack);
 
   state = { ...state, stack: stackWithoutPoppedObject };
-  state = poppedStackObject.onResolve(state);
+  state = poppedStackObject.onResolve(state, poppedStackObject);
   state = clearStateBackupReducer(state);
   return state;
 };

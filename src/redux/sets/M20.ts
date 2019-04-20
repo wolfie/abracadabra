@@ -1,7 +1,6 @@
 import {
   Ability,
   Card,
-  CardLifetimeEventHandler,
   CardPrototype,
   CardTypeInfo,
   GameState,
@@ -10,11 +9,11 @@ import {
 } from '../game-state/types';
 
 export const swamp: CardPrototype = {
+  ...CardPrototype.NULL,
   castingCost: {},
-  abilities: [Ability.TapForBlackMana],
+  activatedAbilities: [Ability.TapForBlackMana],
   name: 'Swamp',
   typeInfo: CardTypeInfo.Swamp,
-  onResolve: CardLifetimeEventHandler.NULL,
   canProvideManaNow: (state: GameState, self: Card) =>
     Zone.cardIsIn('battlefield', self, state) &&
     Permanent.matches(self) &&
@@ -22,11 +21,11 @@ export const swamp: CardPrototype = {
 };
 
 export const mountain: CardPrototype = {
+  ...CardPrototype.NULL,
   castingCost: {},
-  abilities: [Ability.TapForRedMana],
+  activatedAbilities: [Ability.TapForRedMana],
   name: 'Mountain',
   typeInfo: CardTypeInfo.Mountain,
-  onResolve: CardLifetimeEventHandler.NULL,
   canProvideManaNow: (state: GameState, self: Card) =>
     Zone.cardIsIn('battlefield', self, state) &&
     Permanent.matches(self) &&

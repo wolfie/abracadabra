@@ -24,7 +24,8 @@ store.dispatch([
   moveCardBetweenZonesAction(Card.from(M20.swamp, 0), null, 'hand'),
   moveCardBetweenZonesAction(Card.from(M20.mountain, 1), null, 'hand'),
   moveCardBetweenZonesAction(Card.from(A25.darkRitual, 2), null, 'hand'),
-  moveCardBetweenZonesAction(Card.from(M11.pyreticRitual, 3), null, 'hand')
+  moveCardBetweenZonesAction(Card.from(M11.pyreticRitual, 3), null, 'hand'),
+  moveCardBetweenZonesAction(Card.from(M11.ornithopter, 4), null, 'hand')
 ]);
 
 ReactDOM.render(

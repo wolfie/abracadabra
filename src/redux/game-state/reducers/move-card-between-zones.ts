@@ -8,25 +8,21 @@ const moveCardBetweenZonesReducer = (
   to: Zone
 ): GameState => {
   assert(() => from !== to);
-  const thisCard = (card_: Card) => card_.id === card.id;
   const notThisCard = (card_: Card) => card_.id !== card.id;
 
   switch (from) {
     case null:
       break;
     case 'hand':
-      assert(() => state.hand.find(thisCard) !== undefined);
       state = {
         ...state,
         hand: state.hand.filter(notThisCard)
       };
       break;
     case 'battlefield':
-      assert(() => state.board.find(thisCard) !== undefined);
       state = { ...state, board: state.board.filter(notThisCard) };
       break;
     case 'stack':
-      assert(() => state.stack.find(thisCard) !== undefined);
       state = { ...state, stack: state.stack.filter(notThisCard) };
       break;
     default:

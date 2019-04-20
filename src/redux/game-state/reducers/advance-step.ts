@@ -1,13 +1,27 @@
 import { GameState, ManaPool } from '../types';
 import getStepInfo, { StepInfo } from '../transformers/step-transformer';
-import { hasCreaturesToAttackWith } from '../selectors';
+import {
+  hasCreaturesDeclaredToAttach,
+  hasCreaturesToAttackWith
+} from '../selectors';
 
 const END_STEP = 11;
 
-const nextStep = (currentStepInfo: StepInfo, shouldGoToCombat: boolean) =>
-  currentStepInfo.isPreCombatMain && !shouldGoToCombat
-    ? END_STEP
-    : (currentStepInfo.stepIndex + 1) % 13;
+const nextStep = (currentStepInfo: StepInfo, state: GameState) => {
+  const creaturesCanAttack = hasCreaturesToAttackWith(state);
+  const noCombatCanHappen =
+    currentStepInfo.isPreCombatMain && !creaturesCanAttack;
+
+  const creaturesWereDeclaredToAttack = hasCreaturesDeclaredToAttach(state);
+  const noCombatDidHappen =
+    currentStepInfo.isCombatDeclareAttackersStep &&
+    !creaturesWereDeclaredToAttack;
+
+  const normallyNextStep = (currentStepInfo.stepIndex + 1) % 13;
+
+  if (noCombatCanHappen || noCombatDidHappen) return END_STEP;
+  return normallyNextStep;
+};
 
 const untapPermanentsReducer = (state: GameState): GameState => ({
   ...state,
@@ -24,23 +38,39 @@ const resetLandsPlayedReducer = (state: GameState): GameState => ({
   landsPlayed: 0
 });
 
+const removeSummoningSicknessReducer = (state: GameState): GameState => ({
+  ...state,
+  board: state.board.map(card => ({
+    ...card,
+    wasCastSinceLastStartOfTurn: false
+  }))
+});
+
 const advanceStepReducer = (prevState: GameState): GameState => {
   const stepInfo = getStepInfo(prevState.currentStep);
-  const shouldGoToCombat = hasCreaturesToAttackWith(prevState);
 
-  let nextState: GameState = {
+  const nextState: GameState = {
     ...prevState,
-    currentStep: nextStep(stepInfo, shouldGoToCombat)
+    currentStep: nextStep(stepInfo, prevState)
   };
 
   const prevPhaseInfo = getStepInfo(prevState.currentStep);
   const nextPhaseInfo = getStepInfo(nextState.currentStep);
-  const phaseHasChanged = prevPhaseInfo.phaseIndex !== nextPhaseInfo.phaseIndex;
-  if (phaseHasChanged) nextState = emptyManaPoolReducer(nextState);
-  if (nextPhaseInfo.isUntapStep) nextState = resetLandsPlayedReducer(nextState);
-  if (nextPhaseInfo.isUntapStep) nextState = untapPermanentsReducer(nextState);
 
-  return nextState;
+  let reducers: Array<(state: GameState) => GameState> = [];
+
+  const phaseHasChanged = prevPhaseInfo.phaseIndex !== nextPhaseInfo.phaseIndex;
+  if (phaseHasChanged) reducers = [...reducers, emptyManaPoolReducer];
+  if (nextPhaseInfo.isUntapStep) {
+    reducers = [
+      ...reducers,
+      removeSummoningSicknessReducer,
+      resetLandsPlayedReducer,
+      untapPermanentsReducer
+    ];
+  }
+
+  return reducers.reduce((state, reducer) => reducer(state), nextState);
 };
 
 export default advanceStepReducer;
