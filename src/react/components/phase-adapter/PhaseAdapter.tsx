@@ -54,16 +54,9 @@ const stepStructure: {
 
 const renderStep = (currentStepIndex: number) => (step: StepEntry) => {
   const isActiveStep = currentStepIndex === step.stepIndex;
-  const style: React.CSSProperties | undefined = isActiveStep
-    ? { fontWeight: 'bold' }
-    : undefined;
 
   return (
-    <span
-      className={css({ activeStep: isActiveStep })}
-      key={step.stepIndex}
-      style={style}
-    >
+    <span className={css({ activeStep: isActiveStep })} key={step.stepIndex}>
       [{step.name}]
     </span>
   );
