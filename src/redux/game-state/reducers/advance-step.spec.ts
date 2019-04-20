@@ -1,5 +1,5 @@
 import { GameState } from '../types';
-import advanceStepReducer from './advance-step-reducer';
+import advanceStepReducer from './advance-step';
 
 const UNTAP_STEP = 0;
 const PRE_COMBAT_MAIN_STEP = 3;

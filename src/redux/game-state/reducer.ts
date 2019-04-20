@@ -16,7 +16,7 @@ import popStackReducer from './reducers/pop-stack';
 import requestPaySingleManaCostReducer from './reducers/request-pay-single-mana-cost';
 import updateActivatableCardIdsReducer from './reducers/update-activatable-card-ids';
 import { restoreStateBackupRestore } from './reducers/state-memory-reducers';
-import advanceStepReducer from './reducers/advance-step-reducer';
+import advanceStepReducer from './reducers/advance-step';
 
 const gameStateReducer = (
   state = GameState.NULL,
