@@ -48,7 +48,7 @@ const StackAdapter: React.FunctionComponent<Props> = ({
       ) : (
         <div>Can't resolve next on stack, pay mana cost first!</div>
       )}
-      {cancelAnimationFrame && <button onClick={cancel}>Cancel</button>}
+      <button onClick={cancel}>Cancel</button>
     </>
   ) : null;
 };
