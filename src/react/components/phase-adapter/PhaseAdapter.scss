@@ -1,5 +1,10 @@
 .phase {
   border: 1px solid black;
+
+  &.disable {
+    background-color: #aaa;
+    opacity: 0.5;
+  }
 }
 
 .activePhase {

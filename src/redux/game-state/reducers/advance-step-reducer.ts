@@ -1,7 +1,13 @@
 import { GameState, ManaPool } from '../types';
-import getStepInfo from '../transformers/phase-transformer';
+import getStepInfo, { StepInfo } from '../transformers/step-transformer';
+import { hasCreaturesToAttackWith } from '../selectors';
 
-const nextStep = (phaseIndex: number) => (phaseIndex + 1) % 13;
+const END_STEP = 11;
+
+const nextStep = (currentStepInfo: StepInfo, shouldGoToCombat: boolean) =>
+  currentStepInfo.isPreCombatMain && !shouldGoToCombat
+    ? END_STEP
+    : (currentStepInfo.stepIndex + 1) % 13;
 
 const untapPermanentsReducer = (state: GameState): GameState => ({
   ...state,
@@ -19,9 +25,12 @@ const resetLandsPlayedReducer = (state: GameState): GameState => ({
 });
 
 const advanceStepReducer = (prevState: GameState): GameState => {
+  const stepInfo = getStepInfo(prevState.currentStep);
+  const shouldGoToCombat = hasCreaturesToAttackWith(prevState);
+
   let nextState: GameState = {
     ...prevState,
-    currentStep: nextStep(prevState.currentStep)
+    currentStep: nextStep(stepInfo, shouldGoToCombat)
   };
 
   const prevPhaseInfo = getStepInfo(prevState.currentStep);

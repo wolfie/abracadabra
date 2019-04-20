@@ -1,7 +1,7 @@
 import { Card, GameState, Zone } from '../types';
 import { canProvideManaNow, isEmpty, isInstant, isLand } from '../../util';
 import { map, pipe, reject, uniq } from 'ramda';
-import getStepInfo, { StepInfo } from '../transformers/phase-transformer';
+import getStepInfo, { StepInfo } from '../transformers/step-transformer';
 
 const cardToId = (card: Card) => card.id;
 

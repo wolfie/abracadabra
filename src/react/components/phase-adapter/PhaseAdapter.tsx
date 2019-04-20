@@ -3,14 +3,16 @@ import { connect } from 'react-redux';
 import { GameState, GameStateActions } from '../../../redux/game-state/types';
 import getPhaseInfo, {
   StepInfo
-} from '../../../redux/game-state/transformers/phase-transformer';
+} from '../../../redux/game-state/transformers/step-transformer';
 import { advancePhaseAction } from '../../../redux/game-state/actions';
 import * as styles from './PhaseAdapter.scss';
 import * as classnames from 'classnames/bind';
+import { hasCreaturesToAttackWith } from '../../../redux/game-state/selectors';
 const css = classnames.bind(styles);
 
 type StateProps = {
   phaseInfo: StepInfo;
+  canEnterCombat: boolean;
 };
 
 type DispatchProps = {
@@ -69,16 +71,18 @@ type IPhaseBase = (
   name: string;
   phaseEntry: PhaseEntry;
   showSteps: boolean;
+  disable?: boolean;
 }) => JSX.Element;
 
 const PhaseBase: IPhaseBase = (currentStepIndex, currentPhaseIndex) => ({
   name,
   phaseEntry,
-  showSteps
+  showSteps,
+  disable = false
 }) => {
   const isActivePhase = currentPhaseIndex === phaseEntry.phaseIndex;
   return (
-    <span className={css('phase', { activePhase: isActivePhase })}>
+    <span className={css('phase', { activePhase: isActivePhase, disable })}>
       {`${name}: `}
       {showSteps && phaseEntry.steps.map(renderStep(currentStepIndex))}
     </span>
@@ -87,7 +91,8 @@ const PhaseBase: IPhaseBase = (currentStepIndex, currentPhaseIndex) => ({
 
 const PhaseAdapter: React.FunctionComponent<Props> = ({
   phaseInfo,
-  advancePhase
+  advancePhase,
+  canEnterCombat
 }) => {
   const Phase = PhaseBase(phaseInfo.stepIndex, phaseInfo.phaseIndex);
   return (
@@ -107,11 +112,13 @@ const PhaseAdapter: React.FunctionComponent<Props> = ({
         name="combat"
         phaseEntry={stepStructure.combat}
         showSteps={phaseInfo.isCombatPhase}
+        disable={!canEnterCombat}
       />
       <Phase
         name="post combat main"
         phaseEntry={stepStructure.postCombat}
         showSteps={phaseInfo.isPostCombatMain}
+        disable={!canEnterCombat}
       />
       <Phase
         name="end"
@@ -123,6 +130,7 @@ const PhaseAdapter: React.FunctionComponent<Props> = ({
 };
 
 const mapStateToProps = (state: GameState): StateProps => ({
+  canEnterCombat: hasCreaturesToAttackWith(state),
   phaseInfo: getPhaseInfo(state.currentStep)
 });
 
