@@ -32,5 +32,5 @@ ReactDOM.render(
   <Provider store={store}>
     <Game />
   </Provider>,
-  document.getElementById('example')
+  document.getElementById('game')
 );

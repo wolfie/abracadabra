@@ -1,0 +1,18 @@
+.gameArea {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.board {
+  flex: 1;
+  height: 100%;
+  display: flex;
+
+  .battlefield {
+    flex: 1;
+  }
+
+  .stack {
+  }
+}

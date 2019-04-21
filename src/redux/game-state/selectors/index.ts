@@ -7,3 +7,6 @@ export const hasCreaturesToAttackWith = (state: GameState): boolean =>
 
 export const hasCreaturesDeclaredToAttach = (state: GameState): boolean =>
   false;
+
+export const stackIsPopulated = (state: GameState): boolean =>
+  state.stack.length > 0;
